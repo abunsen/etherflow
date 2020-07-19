@@ -2,21 +2,33 @@ const Web3RpcCalls = {
   web3_clientVersion: {
     description: 'Returns the current client version.',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('web3_clientVersion');
+      },
       codeSample: (url, ...args) => {
         return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
 
-const provider = new ethers.providers.JsonRpcProvider('${url}');
-// OR const provider = new ethers.providers.WebSocketProvider('${url}');
-const version = await provider.send('web3_clientVersion');
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const version = await provider.send('web3_clientVersion');
+  console.log(version);
+})()
 
-console.log(version);`;
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const version = await provider.send('web3_clientVersion');
+  console.log(version);
+})()
+`;
       },
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -24,12 +36,12 @@ console.log(version);`;
   web3_sha3: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -37,12 +49,12 @@ console.log(version);`;
   net_version: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -50,12 +62,12 @@ console.log(version);`;
   net_peerCount: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -63,12 +75,12 @@ console.log(version);`;
   net_listening: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -76,12 +88,12 @@ console.log(version);`;
   eth_protocolVersion: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -89,12 +101,12 @@ console.log(version);`;
   eth_syncing: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -102,12 +114,12 @@ console.log(version);`;
   eth_coinbase: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -115,12 +127,12 @@ console.log(version);`;
   eth_mining: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -128,12 +140,12 @@ console.log(version);`;
   eth_hashrate: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -141,12 +153,12 @@ console.log(version);`;
   eth_gasPrice: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -154,12 +166,12 @@ console.log(version);`;
   eth_accounts: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -167,12 +179,12 @@ console.log(version);`;
   eth_blockNumber: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -180,12 +192,12 @@ console.log(version);`;
   eth_getBalance: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -193,12 +205,12 @@ console.log(version);`;
   eth_getStorageAt: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -206,12 +218,12 @@ console.log(version);`;
   eth_getTransactionCount: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -219,12 +231,12 @@ console.log(version);`;
   eth_getBlockTransactionCountByHash: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -232,12 +244,12 @@ console.log(version);`;
   eth_getBlockTransactionCountByNumber: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -245,12 +257,12 @@ console.log(version);`;
   eth_getUncleCountByBlockHash: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -258,12 +270,12 @@ console.log(version);`;
   eth_getUncleCountByBlockNumber: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -271,12 +283,12 @@ console.log(version);`;
   eth_getCode: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -284,12 +296,12 @@ console.log(version);`;
   eth_sign: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -297,12 +309,12 @@ console.log(version);`;
   eth_signTransaction: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -310,12 +322,12 @@ console.log(version);`;
   eth_sendTransaction: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -323,12 +335,12 @@ console.log(version);`;
   eth_sendRawTransaction: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -336,12 +348,12 @@ console.log(version);`;
   eth_call: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -349,12 +361,12 @@ console.log(version);`;
   eth_estimateGas: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -362,12 +374,12 @@ console.log(version);`;
   eth_getBlockByHash: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -375,12 +387,12 @@ console.log(version);`;
   eth_getBlockByNumber: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -388,12 +400,12 @@ console.log(version);`;
   eth_getTransactionByHash: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -401,12 +413,12 @@ console.log(version);`;
   eth_getTransactionByBlockHashAndIndex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -414,12 +426,12 @@ console.log(version);`;
   eth_getTransactionByBlockNumberAndIndex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -427,12 +439,12 @@ console.log(version);`;
   eth_getTransactionReceipt: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -440,12 +452,12 @@ console.log(version);`;
   eth_getUncleByBlockHashAndIndex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -453,12 +465,12 @@ console.log(version);`;
   eth_getUncleByBlockNumberAndIndex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -466,12 +478,12 @@ console.log(version);`;
   eth_getCompilers: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -479,12 +491,12 @@ console.log(version);`;
   eth_compileLLL: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -492,12 +504,12 @@ console.log(version);`;
   eth_compileSolidity: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -505,12 +517,12 @@ console.log(version);`;
   eth_compileSerpent: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -518,12 +530,12 @@ console.log(version);`;
   eth_newFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -531,12 +543,12 @@ console.log(version);`;
   eth_newBlockFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -544,12 +556,12 @@ console.log(version);`;
   eth_newPendingTransactionFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -557,12 +569,12 @@ console.log(version);`;
   eth_uninstallFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -570,12 +582,12 @@ console.log(version);`;
   eth_getFilterChanges: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -583,12 +595,12 @@ console.log(version);`;
   eth_getFilterLogs: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -596,12 +608,12 @@ console.log(version);`;
   eth_getLogs: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -609,12 +621,12 @@ console.log(version);`;
   eth_getWork: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -622,12 +634,12 @@ console.log(version);`;
   eth_submitWork: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -635,12 +647,12 @@ console.log(version);`;
   eth_submitHashrate: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -648,12 +660,12 @@ console.log(version);`;
   db_putString: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -661,12 +673,12 @@ console.log(version);`;
   db_getString: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -674,12 +686,12 @@ console.log(version);`;
   db_putHex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -687,12 +699,12 @@ console.log(version);`;
   db_getHex: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -700,12 +712,12 @@ console.log(version);`;
   shh_post: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -713,12 +725,12 @@ console.log(version);`;
   shh_version: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -726,12 +738,12 @@ console.log(version);`;
   shh_newIdentity: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -739,12 +751,12 @@ console.log(version);`;
   shh_hasIdentity: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -752,12 +764,12 @@ console.log(version);`;
   shh_newGroup: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -765,12 +777,12 @@ console.log(version);`;
   shh_addToGroup: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -778,12 +790,12 @@ console.log(version);`;
   shh_newFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -791,12 +803,12 @@ console.log(version);`;
   shh_uninstallFilter: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -804,12 +816,12 @@ console.log(version);`;
   shh_getFilterChanges: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
@@ -817,12 +829,12 @@ console.log(version);`;
   shh_getMessages: {
     description: '',
     ethers: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
-      exec: (provider) => {},
+      exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
       args: [],
     },

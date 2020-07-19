@@ -10,10 +10,10 @@ const CodeSample = ({
   url,
   visible,
 }) => {
-  const codeSampleText = Web3RpcCalls[currentMethod][web3Lib]['codeSample'](
-    url,
-    ...args
-  );
+  const codeSampleText =
+    currentMethod && web3Lib
+      ? Web3RpcCalls[currentMethod][web3Lib]['codeSample'](url, ...args)
+      : '';
   const classes = `${visible ? '' : 'hidden'} fixed inset-0 overflow-hidden`;
 
   return (

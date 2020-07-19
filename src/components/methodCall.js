@@ -1,5 +1,4 @@
 import React from 'react';
-import Web3RpcCalls from '../helpers/web3Config';
 
 const Field = (props) => {
   return (
@@ -27,11 +26,10 @@ const MethodCall = ({
   currentMethod,
   codeSampleVisible,
   toggleSampleCode,
+  description,
+  args,
+  runRequest,
 }) => {
-  const web3Method = Web3RpcCalls[currentMethod];
-  const { description } = web3Method;
-  const { args, exec } = web3Method[web3Lib];
-
   return (
     <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen">
       <h2 className="text-gray-500 text-xs font-medium tracking-wide mb-2">
@@ -52,7 +50,7 @@ const MethodCall = ({
         <button
           type="button"
           className="w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
-          onClick={exec}
+          onClick={runRequest}
         >
           <svg
             className="-ml-0.5 mr-2 h-4 w-4"
