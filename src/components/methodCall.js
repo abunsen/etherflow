@@ -25,7 +25,7 @@ const MethodCall = ({
   web3URL,
   web3Lib,
   currentMethod,
-  sampleCodeVisible,
+  codeSampleVisible,
   toggleSampleCode,
 }) => {
   const web3Method = Web3RpcCalls[currentMethod];
@@ -34,12 +34,10 @@ const MethodCall = ({
 
   return (
     <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen">
-      <label
-        htmlFor="arguments"
-        className="block text-sm leading-5 font-medium text-gray-700"
-      >
-        Method: <pre className="inline">{currentMethod}</pre>
-      </label>
+      <h2 className="text-gray-500 text-xs font-medium tracking-wide mb-2">
+        <span className="uppercase">Method:</span>{' '}
+        <pre className="inline">{currentMethod}</pre>
+      </h2>
       <hr className="my-2" />
       <p className="text-xs mb-3">{description}</p>
       {args.length > 0 && (
@@ -92,7 +90,7 @@ const MethodCall = ({
               </g>
             </g>
           </svg>
-          {sampleCodeVisible ? 'Hide' : 'View'} sample code
+          {codeSampleVisible ? 'Hide' : 'View'} sample code
         </button>
       </p>
     </div>

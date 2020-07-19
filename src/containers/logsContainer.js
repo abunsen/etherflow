@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useCallback } from 'react';
 import { Logs } from '../components';
-import { AppContext } from '../context';
+import { LogContext } from '../context';
 import { useParams } from '@reach/router';
 
 const LogsContainer = () => {
-  const { logs, addToLog } = useContext(AppContext);
+  const { logs, addToLog } = useContext(LogContext);
   const params = useParams();
   const web3URL = params.web3URL || null;
   const logItem = useCallback(addToLog, []);

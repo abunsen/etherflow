@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from '@reach/router';
+import { NeedLibMessage } from './needLibMessage';
 import Web3RpcCalls from '../helpers/web3Config';
 
 const MethodItem = ({ index, methodName, web3URL, web3Lib }) => {
@@ -36,18 +37,27 @@ const MethodItem = ({ index, methodName, web3URL, web3Lib }) => {
 
 const MethodList = ({ web3Lib, web3URL }) => {
   const methodList = Object.keys(Web3RpcCalls);
+  if (!web3Lib) return <NeedLibMessage />;
+
   return (
-    <ul className="">
-      {methodList.map((key, i) => (
-        <MethodItem
-          key={key}
-          methodName={key}
-          index={i}
-          web3URL={web3URL}
-          web3Lib={web3Lib}
-        />
-      ))}
-    </ul>
+    <div className="mt-3">
+      <h2 className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-4">
+        Possible Methods
+      </h2>
+      <div className="h-screen overflow-x-scroll bg-white border-gray-200 border shadow sm:rounded-md">
+        <ul className="">
+          {methodList.map((key, i) => (
+            <MethodItem
+              key={key}
+              methodName={key}
+              index={i}
+              web3URL={web3URL}
+              web3Lib={web3Lib}
+            />
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 

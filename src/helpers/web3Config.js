@@ -3,12 +3,21 @@ const Web3RpcCalls = {
     description: 'Returns the current client version.',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {
+        return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+const provider = new ethers.providers.JsonRpcProvider('${url}');
+// OR const provider = new ethers.providers.WebSocketProvider('${url}');
+const version = await provider.send('web3_clientVersion');
+
+console.log(version);`;
+      },
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -16,12 +25,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -29,12 +38,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -42,12 +51,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -55,12 +64,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -68,12 +77,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -81,12 +90,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -94,12 +103,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -107,12 +116,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -120,12 +129,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -133,12 +142,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -146,12 +155,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -159,12 +168,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -172,12 +181,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -185,12 +194,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -198,12 +207,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -211,12 +220,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -224,12 +233,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -237,12 +246,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -250,12 +259,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -263,12 +272,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -276,12 +285,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -289,12 +298,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -302,12 +311,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -315,12 +324,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -328,12 +337,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -341,12 +350,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -354,12 +363,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -367,12 +376,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -380,12 +389,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -393,12 +402,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -406,12 +415,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -419,12 +428,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -432,12 +441,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -445,12 +454,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -458,12 +467,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -471,12 +480,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -484,12 +493,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -497,12 +506,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -510,12 +519,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -523,12 +532,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -536,12 +545,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -549,12 +558,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -562,12 +571,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -575,12 +584,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -588,12 +597,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -601,12 +610,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -614,12 +623,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -627,12 +636,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -640,12 +649,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -653,12 +662,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -666,12 +675,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -679,12 +688,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -692,12 +701,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -705,12 +714,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -718,12 +727,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -731,12 +740,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -744,12 +753,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -757,12 +766,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -770,12 +779,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -783,12 +792,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -796,12 +805,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
@@ -809,12 +818,12 @@ const Web3RpcCalls = {
     description: '',
     ethers: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
     web3: {
       exec: (provider) => {},
-      codeSample: (...args) => {},
+      codeSample: (url, ...args) => {},
       args: [],
     },
   },
