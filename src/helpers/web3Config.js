@@ -1,3 +1,24 @@
+const ethersTemplate = (methodCall, varName, url) => {
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const ${varName} = await provider.${methodCall};
+  console.log(${varName});
+})()
+
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const ${varName} = await provider.${methodCall};
+  console.log(${varName});
+})()
+`;
+};
+
 const Web3RpcCalls = {
   web3_clientVersion: {
     description: 'Returns the current client version.',
@@ -6,24 +27,7 @@ const Web3RpcCalls = {
         return provider.send('web3_clientVersion');
       },
       codeSample: (url, ...args) => {
-        return `const ethers = require("ethers");
-// OR import ethers from 'ethers';
-
-// HTTP version
-(async () => {
-  const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const version = await provider.send('web3_clientVersion');
-  console.log(version);
-})()
-
-
-// WebSocket version
-(async () => {
-  const provider = new ethers.providers.WebSocketProvider('${url}');
-  const version = await provider.send('web3_clientVersion');
-  console.log(version);
-})()
-`;
+        return ethersTemplate("send('web3_clientVersion')", 'version', url);
       },
       args: [],
     },
@@ -34,11 +38,22 @@ const Web3RpcCalls = {
     },
   },
   web3_sha3: {
-    description: '',
+    description:
+      'Returns Keccak-256 (not the standardized SHA3-256) of the given data.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('web3_sha3', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(`send('web3_sha3', ['${args[0]}'])`, 'hash', url);
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The hexified data to convert into a SHA3 hash',
+          placeholder: '0x...',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -47,23 +62,14 @@ const Web3RpcCalls = {
     },
   },
   net_version: {
-    description: '',
+    description: 'Returns the current network id.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  net_peerCount: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.getNetwork();
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate('getNetwork()', 'network', url);
+      },
       args: [],
     },
     web3: {
@@ -73,10 +79,32 @@ const Web3RpcCalls = {
     },
   },
   net_listening: {
-    description: '',
+    description:
+      'Returns `true` if client is actively listening for network connections.',
     ethers: {
+      exec: (provider, proto, ...args) => {
+        return provider.send('net_listening');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('net_listening')", 'listening', url);
+      },
+      args: [],
+    },
+    web3: {
       exec: (provider, proto, ...args) => {},
       codeSample: (url, ...args) => {},
+      args: [],
+    },
+  },
+  net_peerCount: {
+    description: 'Returns number of peers currently connected to the client.',
+    ethers: {
+      exec: (provider, proto, ...args) => {
+        return provider.send('net_peerCount');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('net_peerCount')", 'peers', url);
+      },
       args: [],
     },
     web3: {
@@ -86,10 +114,14 @@ const Web3RpcCalls = {
     },
   },
   eth_protocolVersion: {
-    description: '',
+    description: 'Returns the current ethereum protocol version.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_protocolVersion');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_protocolVersion')", 'version', url);
+      },
       args: [],
     },
     web3: {
@@ -99,10 +131,14 @@ const Web3RpcCalls = {
     },
   },
   eth_syncing: {
-    description: '',
+    description: 'Returns an object with data about the sync status or false.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_syncing');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_syncing')", 'isSyncing', url);
+      },
       args: [],
     },
     web3: {
@@ -112,10 +148,14 @@ const Web3RpcCalls = {
     },
   },
   eth_coinbase: {
-    description: '',
+    description: 'Returns the client coinbase address.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_coinbase');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_coinbase')", 'coinbase', url);
+      },
       args: [],
     },
     web3: {
@@ -125,10 +165,14 @@ const Web3RpcCalls = {
     },
   },
   eth_mining: {
-    description: '',
+    description: 'Returns `true` if client is actively mining new blocks.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_mining');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_mining')", 'isMining', url);
+      },
       args: [],
     },
     web3: {
@@ -138,10 +182,15 @@ const Web3RpcCalls = {
     },
   },
   eth_hashrate: {
-    description: '',
+    description:
+      'Returns the number of hashes per second that the node is mining with.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_hashrate');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_hashrate')", 'hashRate', url);
+      },
       args: [],
     },
     web3: {
@@ -151,10 +200,14 @@ const Web3RpcCalls = {
     },
   },
   eth_gasPrice: {
-    description: '',
+    description: 'Returns the current price per gas in wei.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.getGasPrice();
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate('getGasPrice()', url);
+      },
       args: [],
     },
     web3: {
@@ -164,10 +217,14 @@ const Web3RpcCalls = {
     },
   },
   eth_accounts: {
-    description: '',
+    description: 'Returns a list of addresses owned by client.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_accounts');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_accounts')", 'accts', url);
+      },
       args: [],
     },
     web3: {
@@ -177,10 +234,14 @@ const Web3RpcCalls = {
     },
   },
   eth_blockNumber: {
-    description: '',
+    description: 'Returns the number of most recent block.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.getBlockNumber();
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate('getBlockNumber()', url);
+      },
       args: [],
     },
     web3: {
@@ -190,11 +251,31 @@ const Web3RpcCalls = {
     },
   },
   eth_getBalance: {
-    description: '',
+    description: 'Returns the balance of the account of given address.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.getBalance(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `getBalance('${args[0]}', '${args[1]}')`,
+          'balance',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to check for balance',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Integer block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -203,11 +284,37 @@ const Web3RpcCalls = {
     },
   },
   eth_getStorageAt: {
-    description: '',
+    description:
+      'Returns the value from a storage position at a given address.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.getStorageAt(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `getStorageAt('${args[0]}', '${args[1]}', '${args[2]}')`,
+          'storage',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address of the storage',
+          placeholder: 'i.e. 0x91b51c173a4... or ENS domain',
+        },
+        {
+          type: 'textfield',
+          description: 'Hex of the position in the storage',
+          placeholder: 'i.e. 0x0, 0x1, 0x2...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Integer block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -216,11 +323,31 @@ const Web3RpcCalls = {
     },
   },
   eth_getTransactionCount: {
-    description: '',
+    description: 'Returns the number of transactions sent from an address.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.getTransactionCount(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `getTransactionCount('${args[0]}', '${args[1]}')`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to check for balance',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Integer block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -229,11 +356,26 @@ const Web3RpcCalls = {
     },
   },
   eth_getBlockTransactionCountByHash: {
-    description: '',
+    description:
+      'Returns the number of transactions in a block from a block matching the given block hash.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getBlockTransactionCountByHash', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getBlockTransactionCountByHash', ['${args[0]}'])`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get transaction count from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -242,11 +384,26 @@ const Web3RpcCalls = {
     },
   },
   eth_getBlockTransactionCountByNumber: {
-    description: '',
+    description:
+      'Returns the number of transactions in a block matching the given block number.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getBlockTransactionCountByNumber', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getBlockTransactionCountByNumber', ['${args[0]}'])`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hex of a block to get transaction count from',
+          placeholder: 'i.e. 0x9C6EFE',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},

@@ -1,20 +1,58 @@
 import React from 'react';
 
-const Field = (props) => {
+const Textarea = ({ placeholder, updateValue }) => {
+  return (
+    <textarea
+      id="tx-data"
+      rows="3"
+      className="form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+      onChange={(e) => updateValue(e.target.value)}
+      placeholder={placeholder}
+    ></textarea>
+  );
+};
+
+const TextField = ({ placeholder, updateValue }) => {
+  return (
+    <div className="mb-4">
+      <input
+        className="form-input block w-full sm:text-sm sm:leading-5"
+        type="text"
+        placeholder={placeholder}
+        onChange={(e) => updateValue(e.target.value)}
+      />
+    </div>
+  );
+};
+
+const Field = ({ description, placeholder, type, updateValue }) => {
+  let actualField;
+  switch (type) {
+    case 'textarea':
+      actualField = (
+        <Textarea updateValue={updateValue} placeholder={placeholder} />
+      );
+      break;
+    case 'textfield':
+      actualField = (
+        <TextField updateValue={updateValue} placeholder={placeholder} />
+      );
+      break;
+    default:
+      actualField = (
+        <Textarea updateValue={updateValue} placeholder={placeholder} />
+      );
+  }
+
   return (
     <div>
-      <div className="max-w-lg flex rounded-md shadow-sm">
-        <textarea
-          id="tx-data"
-          rows="3"
-          className="form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-        ></textarea>
-      </div>
+      <div className="max-w-lg flex rounded-md shadow-sm"></div>
       <p className="mt-2 text-sm text-gray-500">
+        {actualField}
         <span role="img" aria-label="Pointing up">
           ☝🏽
         </span>{' '}
-        The signed transaction data
+        {description}
       </p>
     </div>
   );
@@ -29,6 +67,8 @@ const MethodCall = ({
   description,
   args,
   runRequest,
+  argumentList,
+  setArgumentList,
 }) => {
   return (
     <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen">
@@ -44,7 +84,17 @@ const MethodCall = ({
         </h2>
       )}
       {args.map((arg, i) => (
-        <Field {...arg} key={i} />
+        <Field
+          {...arg}
+          key={i}
+          updateValue={(val) => {
+            setArgumentList((argList) => {
+              const argsCopy = [...argList];
+              argsCopy[i] = val;
+              return argsCopy;
+            });
+          }}
+        />
       ))}
       <span className="inline-flex w-full rounded-md shadow-sm mt-4">
         <button

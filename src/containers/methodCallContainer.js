@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
@@ -7,10 +7,14 @@ import { useParams } from '@reach/router';
 
 const MethodCallContainer = () => {
   const params = useParams();
-  const { codeSampleVisible, toggleSampleCode } = useContext(AppContext);
+  const {
+    codeSampleVisible,
+    toggleSampleCode,
+    argumentList,
+    setArgumentList,
+  } = useContext(AppContext);
   const { addToLog } = useContext(LogContext);
   const logItem = useCallback(addToLog, []);
-  const [argumentList, setArgumentList] = useState([]);
   const { web3URL = '', web3Lib = '', currentMethod = '' } = params;
   const web3Method = Web3RpcCalls[currentMethod] || {};
   const { description } = web3Method || {};
@@ -45,6 +49,7 @@ const MethodCallContainer = () => {
     args,
     runRequest,
     setArgumentList,
+    argumentList,
   };
 
   if (!web3URL) {

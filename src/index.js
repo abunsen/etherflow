@@ -12,8 +12,6 @@ import {
 import { AppProvider } from './context';
 import { Router } from '@reach/router';
 
-import 'ace-builds/src-noconflict/mode-java';
-import 'ace-builds/src-noconflict/theme-github';
 import './tailwind.output.css';
 
 const Wrapper = () => (

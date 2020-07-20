@@ -1,5 +1,6 @@
 import React from 'react';
-import AceEditor from 'react-ace';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import Web3RpcCalls from '../helpers/web3Config';
 
 const CodeSample = ({
@@ -11,9 +12,10 @@ const CodeSample = ({
   visible,
 }) => {
   const codeSampleText =
-    currentMethod && web3Lib
-      ? Web3RpcCalls[currentMethod][web3Lib]['codeSample'](url, ...args)
-      : '';
+    currentMethod &&
+    web3Lib &&
+    url &&
+    Web3RpcCalls[currentMethod][web3Lib]['codeSample'](url, ...args);
   const classes = `${visible ? '' : 'hidden'} fixed inset-0 overflow-hidden`;
 
   return (
@@ -53,27 +55,16 @@ const CodeSample = ({
               </header>
               <div className="relative flex-1 px-4 sm:px-6 sm:pr-10">
                 <div className="absolute inset-0 px-4 sm:px-6 overflow-hidden">
-                  <AceEditor
-                    placeholder="Placeholder Text"
-                    mode="javascript"
-                    theme="github"
-                    name="code-sample"
-                    width="100%"
-                    height="100%"
+                  <SyntaxHighlighter
+                    language="javascript"
+                    style={docco}
                     className="round rounded-lg border"
-                    fontSize={10}
-                    showPrintMargin={true}
-                    showGutter={true}
-                    highlightActiveLine={true}
-                    value={codeSampleText}
-                    setOptions={{
-                      enableBasicAutocompletion: false,
-                      enableLiveAutocompletion: false,
-                      enableSnippets: false,
-                      showLineNumbers: true,
-                      tabSize: 2,
-                    }}
-                  />
+                    showLineNumbers={true}
+                    wrapLines={true}
+                    customStyle={{ fontSize: '10px' }}
+                  >
+                    {codeSampleText}
+                  </SyntaxHighlighter>
                 </div>
               </div>
             </div>

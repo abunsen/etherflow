@@ -8,7 +8,7 @@ const Logs = ({ logs }) => {
         Logs
       </h2>
       <div className="text-gray-200">
-        <Console logs={logs} variant="dark" />
+        <Console logs={logs} filter={['log', 'error', 'info']} variant="dark" />
       </div>
     </div>
   );
