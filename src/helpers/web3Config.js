@@ -51,7 +51,7 @@ const Web3RpcCalls = {
         {
           type: 'textarea',
           description: 'The hexified data to convert into a SHA3 hash',
-          placeholder: '0x...',
+          placeholder: 'i.e. 0x68656c6c6f20776f726c64',
         },
       ],
     },
@@ -272,7 +272,7 @@ const Web3RpcCalls = {
         {
           type: 'textfield',
           description:
-            'Integer block number, or the string "latest", "earliest" or "pending"',
+            'Hex block number, or the string "latest", "earliest" or "pending"',
           placeholder: 'i.e. latest or pending',
         },
       ],
@@ -311,7 +311,7 @@ const Web3RpcCalls = {
         {
           type: 'textfield',
           description:
-            'Integer block number, or the string "latest", "earliest" or "pending"',
+            'Hex block number, or the string "latest", "earliest" or "pending"',
           placeholder: 'i.e. latest or pending',
         },
       ],
@@ -344,7 +344,7 @@ const Web3RpcCalls = {
         {
           type: 'textfield',
           description:
-            'Integer block number, or the string "latest", "earliest" or "pending"',
+            'Hex block number, or the string "latest", "earliest" or "pending"',
           placeholder: 'i.e. latest or pending',
         },
       ],
@@ -412,11 +412,26 @@ const Web3RpcCalls = {
     },
   },
   eth_getUncleCountByBlockHash: {
-    description: '',
+    description:
+      'Returns the number of uncles in a block from a block matching the given block hash.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getUncleCountByBlockHash', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getUncleCountByBlockHash', ['${args[0]}'])`,
+          'uncleCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get uncle count from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -425,11 +440,26 @@ const Web3RpcCalls = {
     },
   },
   eth_getUncleCountByBlockNumber: {
-    description: '',
+    description:
+      'Returns the number of uncles in a block from a block matching the given block number.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getUncleCountByBlockNumber', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getUncleCountByBlockNumber', ['${args[0]}'])`,
+          'uncleCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hex of a block to get uncle count from',
+          placeholder: 'i.e. 0x9C6EFE',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -438,11 +468,31 @@ const Web3RpcCalls = {
     },
   },
   eth_getCode: {
-    description: '',
+    description: 'Returns code at a given address.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.getCode(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `getCode('${args[0]}', '${args[1]}')`,
+          'code',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to fetch code from',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -451,50 +501,98 @@ const Web3RpcCalls = {
     },
   },
   eth_sign: {
-    description: '',
+    description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
   eth_signTransaction: {
-    description: '',
+    description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
   eth_sendTransaction: {
-    description: '',
+    description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
   eth_sendRawTransaction: {
-    description: '',
+    description:
+      'Creates new message call transaction or a contract creation for signed transactions.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.sendTransaction(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(`sendTransaction('${args[0]}')`, 'tx', url);
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The previously signed transaction data',
+          placeholder:
+            'i.e. 0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -529,11 +627,38 @@ const Web3RpcCalls = {
     },
   },
   eth_getBlockByHash: {
-    description: '',
+    description: 'Returns information about a block by hash.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        if (args[1] === 'true') {
+          return provider.getBlockWithTransactions(args[0]);
+        } else {
+          return provider.getBlock(args[0]);
+        }
+      },
+      codeSample: (url, ...args) => {
+        if (args[1] === 'true') {
+          return ethersTemplate(
+            `getBlockWithTransactions('${args[0]}')`,
+            'blockData',
+            url
+          );
+        } else {
+          return ethersTemplate(`getBlock('${args[0]}')`, 'blockData', url);
+        }
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'boolean',
+          description: 'Should we return full transaction objects?',
+          placeholder: '',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -542,11 +667,38 @@ const Web3RpcCalls = {
     },
   },
   eth_getBlockByNumber: {
-    description: '',
+    description: 'Returns information about a block by block number.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        if (args[1] === 'true') {
+          return provider.getBlockWithTransactions(args[0]);
+        } else {
+          return provider.getBlock(args[0]);
+        }
+      },
+      codeSample: (url, ...args) => {
+        if (args[1] === 'true') {
+          return ethersTemplate(
+            `getBlockWithTransactions('${args[0]}')`,
+            'blockData',
+            url
+          );
+        } else {
+          return ethersTemplate(`getBlock('${args[0]}')`, 'blockData', url);
+        }
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hex of a block number to get information from',
+          placeholder: 'i.e. 0x9C6EFE',
+        },
+        {
+          type: 'boolean',
+          description: 'Should we return full transaction objects?',
+          placeholder: '',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -555,11 +707,27 @@ const Web3RpcCalls = {
     },
   },
   eth_getTransactionByHash: {
-    description: '',
+    description:
+      'Returns the information about a transaction requested by transaction hash.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.waitForTransaction(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `waitForTransaction('${args[0]}')`,
+          'txInfo',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -568,11 +736,33 @@ const Web3RpcCalls = {
     },
   },
   eth_getTransactionByBlockHashAndIndex: {
-    description: '',
+    description:
+      'Returns information about a transaction by block hash and transaction index position.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getTransactionByBlockHashAndIndex', [
+          ...args,
+        ]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getTransactionByBlockHashAndIndex', ['${args[0]}', '${args[1]}'])`,
+          'txInfo',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'textfield',
+          description: 'Hex of tx position in the block',
+          placeholder: 'i.e. 0x0, 0x1, 0x2...',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -581,11 +771,34 @@ const Web3RpcCalls = {
     },
   },
   eth_getTransactionByBlockNumberAndIndex: {
-    description: '',
+    description:
+      'Returns information about a transaction by block number and transaction index position.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getTransactionByBlockNumberAndIndex', [
+          ...args,
+        ]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getTransactionByBlockNumberAndIndex', ['${args[0]}', '${args[1]}'])`,
+          'txInfo',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+        {
+          type: 'textfield',
+          description: 'Hex of tx position in the block',
+          placeholder: 'i.e. 0x0, 0x1, 0x2...',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -802,58 +1015,6 @@ const Web3RpcCalls = {
     },
   },
   eth_submitHashrate: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  db_putString: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  db_getString: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  db_putHex: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  db_getHex: {
     description: '',
     ethers: {
       exec: (provider, proto, ...args) => {},

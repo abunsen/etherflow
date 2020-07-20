@@ -14,14 +14,31 @@ const Textarea = ({ placeholder, updateValue }) => {
 
 const TextField = ({ placeholder, updateValue }) => {
   return (
-    <div className="mb-4">
+    <span className="mb-4">
       <input
         className="form-input block w-full sm:text-sm sm:leading-5"
         type="text"
         placeholder={placeholder}
         onChange={(e) => updateValue(e.target.value)}
       />
-    </div>
+    </span>
+  );
+};
+
+const BooleanSelect = ({ updateValue }) => {
+  return (
+    <select
+      defaultValue=""
+      className="my-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+      onChange={(e) => updateValue(e.target.value)}
+    >
+      <option disabled value="">
+        {' '}
+        -- select an option --{' '}
+      </option>
+      <option value={false}>false</option>
+      <option value={true}>true</option>
+    </select>
   );
 };
 
@@ -37,6 +54,9 @@ const Field = ({ description, placeholder, type, updateValue }) => {
       actualField = (
         <TextField updateValue={updateValue} placeholder={placeholder} />
       );
+      break;
+    case 'boolean':
+      actualField = <BooleanSelect updateValue={updateValue} />;
       break;
     default:
       actualField = (
