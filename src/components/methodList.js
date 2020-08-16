@@ -40,12 +40,12 @@ const MethodList = ({ web3Lib, web3URL }) => {
   if (!web3Lib) return <NeedLibMessage />;
 
   return (
-    <div className="mt-3">
+    <div className="mt-3 pb-8">
       <h2 className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-4">
         Possible Methods
       </h2>
       <div className="h-screen overflow-x-scroll bg-white border-gray-200 border shadow sm:rounded-md">
-        <ul className="">
+        <ul className="mb-8 pb-8">
           {methodList.map((key, i) => (
             <MethodItem
               key={key}
@@ -55,6 +55,8 @@ const MethodList = ({ web3Lib, web3URL }) => {
               web3Lib={web3Lib}
             />
           ))}
+          <li>&nbsp;</li>
+          <li>&nbsp;</li>
         </ul>
       </div>
     </div>

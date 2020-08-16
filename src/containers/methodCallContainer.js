@@ -17,7 +17,7 @@ const MethodCallContainer = () => {
   const logItem = useCallback(addToLog, []);
   const { web3URL = '', web3Lib = '', currentMethod = '' } = params;
   const web3Method = Web3RpcCalls[currentMethod] || {};
-  const { description } = web3Method || {};
+  const { description, disabled } = web3Method || {};
   const { args, exec } = web3Method[web3Lib] || {};
   const runRequest = (args) => {
     logItem({
@@ -46,6 +46,7 @@ const MethodCallContainer = () => {
     web3Lib,
     web3URL,
     description,
+    disabled,
     args,
     runRequest,
     setArgumentList,

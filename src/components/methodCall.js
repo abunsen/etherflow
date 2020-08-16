@@ -85,13 +85,14 @@ const MethodCall = ({
   codeSampleVisible,
   toggleSampleCode,
   description,
+  disabled,
   args,
   runRequest,
   argumentList,
   setArgumentList,
 }) => {
   return (
-    <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen">
+    <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen overflow-x-scroll">
       <h2 className="text-gray-500 text-xs font-medium tracking-wide mb-2">
         <span className="uppercase">Method:</span>{' '}
         <pre className="inline">{currentMethod}</pre>
@@ -119,8 +120,11 @@ const MethodCall = ({
       <span className="inline-flex w-full rounded-md shadow-sm mt-4">
         <button
           type="button"
-          className="w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          className={`${
+            disabled ? 'opacity-25' : ''
+          } w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150`}
           onClick={runRequest}
+          disabled={disabled}
         >
           <svg
             className="-ml-0.5 mr-2 h-4 w-4"

@@ -240,7 +240,7 @@ const Web3RpcCalls = {
         return provider.getBlockNumber();
       },
       codeSample: (url, ...args) => {
-        return ethersTemplate('getBlockNumber()', url);
+        return ethersTemplate('getBlockNumber()', 'blockNum', url);
       },
       args: [],
     },
@@ -501,6 +501,7 @@ const Web3RpcCalls = {
     },
   },
   eth_sign: {
+    disabled: true,
     description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
       exec: (provider, proto, ...args) => {
@@ -526,6 +527,7 @@ const Web3RpcCalls = {
     },
   },
   eth_signTransaction: {
+    disabled: true,
     description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
       exec: (provider, proto, ...args) => {
@@ -551,6 +553,7 @@ const Web3RpcCalls = {
     },
   },
   eth_sendTransaction: {
+    disabled: true,
     description: '🚫 This method is not supported in EtherFlow!',
     ethers: {
       exec: (provider, proto, ...args) => {
@@ -601,28 +604,54 @@ const Web3RpcCalls = {
     },
   },
   eth_call: {
-    description: '',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
   eth_estimateGas: {
-    description: '',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
@@ -711,11 +740,11 @@ const Web3RpcCalls = {
       'Returns the information about a transaction requested by transaction hash.',
     ethers: {
       exec: (provider, proto, ...args) => {
-        return provider.waitForTransaction(...args);
+        return provider.waitForTransaction(args[0], 0);
       },
       codeSample: (url, ...args) => {
         return ethersTemplate(
-          `waitForTransaction('${args[0]}')`,
+          `waitForTransaction('${args[0]}', 0)`,
           'txInfo',
           url
         );
@@ -807,11 +836,26 @@ const Web3RpcCalls = {
     },
   },
   eth_getTransactionReceipt: {
-    description: '',
+    description: 'Returns the receipt of a transaction by transaction hash.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.waitForTransaction(...args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `waitForTransaction('${args[0]}')`,
+          'txReceipt',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -820,11 +864,31 @@ const Web3RpcCalls = {
     },
   },
   eth_getUncleByBlockHashAndIndex: {
-    description: '',
+    description:
+      'Returns information about a uncle of a block by hash and uncle index position.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getUncleByBlockHashAndIndex', args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getUncleByBlockHashAndIndex', ['${args[0]}', '${args[1]}']`,
+          'blockUncle',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'textfield',
+          description: 'The uncle’s index position.',
+          placeholder: 'i.e. 0x0',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -833,11 +897,32 @@ const Web3RpcCalls = {
     },
   },
   eth_getUncleByBlockNumberAndIndex: {
-    description: '',
+    description:
+      'Returns information about a uncle of a block by number and uncle index position.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getUncleByBlockNumberAndIndex', args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_getUncleByBlockNumberAndIndex', ['${args[0]}', '${args[1]}']`,
+          'blockUncle',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. 0x29c',
+        },
+        {
+          type: 'textfield',
+          description: 'The uncle’s index position.',
+          placeholder: 'i.e. 0x0',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -846,23 +931,14 @@ const Web3RpcCalls = {
     },
   },
   eth_getCompilers: {
-    description: '',
+    description: 'Returns a list of available compilers in the client.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  eth_compileLLL: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getCompilers');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate("send('eth_getCompilers')", 'compilerList', url);
+      },
       args: [],
     },
     web3: {
@@ -872,11 +948,26 @@ const Web3RpcCalls = {
     },
   },
   eth_compileSolidity: {
-    description: '',
+    description: 'Returns compiled solidity code + ABI.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_compileSolidity', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_compileSolidity', ['${args[0]}'])`,
+          'compiledCode',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The source code you wish to compile.',
+          placeholder:
+            'i.e. contract test { function multiply(uint a) returns(uint d) {   return a * 7;   } }',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -885,11 +976,25 @@ const Web3RpcCalls = {
     },
   },
   eth_compileSerpent: {
-    description: '',
+    description: 'Returns compiled serpent code.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_compileSerpent', args);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('eth_compileSerpent', ['${args[0]}'])`,
+          'compiledCode',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The source code you wish to compile.',
+          placeholder: 'i.e. /* some serpent */',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -898,11 +1003,80 @@ const Web3RpcCalls = {
     },
   },
   eth_newFilter: {
-    description: '',
+    description:
+      'Creates a filter object, based on filter options, to notify when the state changes (logs). To check if the state has changed, call eth_getFilterChanges.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        const filter = {};
+        filter.topics = args[3]
+          ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+          : [];
+        filter.fromBlock = args[0] ? args[0] : 'latest';
+        filter.toBlock = args[1] ? args[1] : 'latest';
+        filter.address = args[2] ? args[2] : null;
+
+        return provider.getLogs(filter);
+      },
+      codeSample: (url, ...args) => {
+        return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+const filter = {
+    topics: ${
+      args[3]
+        ? JSON.stringify(
+            args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+          )
+        : '[]'
+    },
+    ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+    ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
+          args[2] ? "\n\taddress: '" + args[2] + "'" : ''
+        }
+};
+
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const logs = await provider.getLogs(filter);
+  console.log(logs);
+})()
+
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const logs = await provider.getLogs(filter);
+  console.log(logs);
+})()
+`;
+      },
+      args: [
+        {
+          type: 'textfield',
+          description:
+            'fromBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. 0x29c',
+        },
+        {
+          type: 'textfield',
+          description:
+            'toBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. 0x29c',
+        },
+        {
+          type: 'textarea',
+          description:
+            'address: (optional) Contract address or a list of addresses from which logs should originate.',
+          placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+        },
+        {
+          type: 'textarea',
+          description:
+            'topics: (optional) Comma separated strings with filter topics, for "or" functionality use ||. Topics are order-dependent.',
+          placeholder: 'i.e. 0x1962||0x16c4,null',
+        },
+      ],
     },
     web3: {
       exec: (provider, proto, ...args) => {},
@@ -911,10 +1085,21 @@ const Web3RpcCalls = {
     },
   },
   eth_newBlockFilter: {
-    description: '',
+    description:
+      'Creates a filter in the node, to notify when a new block arrives. To check if the state has changed, call `eth_getFilterChanges`.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) => provider.on('block', resolve));
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `on("block", (blockNumber) => {
+    // your callback code here
+  })`,
+          'blockWatcher',
+          url
+        );
+      },
       args: [],
     },
     web3: {
@@ -924,10 +1109,19 @@ const Web3RpcCalls = {
     },
   },
   eth_newPendingTransactionFilter: {
-    description: '',
+    description:
+      'Creates a filter in the node, to notify when new pending transactions arrive. To check if the state has changed, call eth_getFilterChanges.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_newPendingTransactionFilter');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          "send('eth_newPendingTransactionFilter')",
+          'filter',
+          url
+        );
+      },
       args: [],
     },
     web3: {
@@ -937,10 +1131,17 @@ const Web3RpcCalls = {
     },
   },
   eth_uninstallFilter: {
-    description: '',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
@@ -950,10 +1151,20 @@ const Web3RpcCalls = {
     },
   },
   eth_getFilterChanges: {
-    description: '',
+    disabled: true,
+    description:
+      'This method is covered by eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
     web3: {
@@ -963,10 +1174,20 @@ const Web3RpcCalls = {
     },
   },
   eth_getFilterLogs: {
-    description: '',
+    disabled: true,
+    description:
+      'This method is covered by eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
     web3: {
@@ -976,10 +1197,20 @@ const Web3RpcCalls = {
     },
   },
   eth_getLogs: {
-    description: '',
+    disabled: true,
+    description:
+      'This method is covered by eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
     web3: {
@@ -989,10 +1220,15 @@ const Web3RpcCalls = {
     },
   },
   eth_getWork: {
-    description: '',
+    description:
+      'Returns the hash of the current block, the seedHash, and the boundary condition to be met (“target”).',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.send('eth_getWork');
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(`send('eth_getWork')`, 'work', url);
+      },
       args: [],
     },
     web3: {
@@ -1002,10 +1238,17 @@ const Web3RpcCalls = {
     },
   },
   eth_submitWork: {
-    description: '',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
@@ -1015,140 +1258,17 @@ const Web3RpcCalls = {
     },
   },
   eth_submitHashrate: {
-    description: '',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_post: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_version: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_newIdentity: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_hasIdentity: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_newGroup: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_addToGroup: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_newFilter: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_uninstallFilter: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_getFilterChanges: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
-    },
-  },
-  shh_getMessages: {
-    description: '',
-    ethers: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
     web3: {
