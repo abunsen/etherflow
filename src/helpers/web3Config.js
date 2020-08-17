@@ -19,6 +19,19 @@ const ethersTemplate = (methodCall, varName, url) => {
 `;
 };
 
+const web3Template = (methodCall, varName, url) => {
+  return `const Web3 = require("web3");
+// OR Web3 ethers from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  const ${varName} = await web3.${methodCall};
+  console.log(${varName});
+})()
+`;
+};
+
 const Web3RpcCalls = {
   web3_clientVersion: {
     description: 'Returns the current client version.',
@@ -32,8 +45,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getNodeInfo();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template('eth.getNodeInfo()', 'version', url);
+      },
       args: [],
     },
   },
@@ -56,25 +73,45 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          resolve(provider.utils.sha3(args[0], { encoding: 'hex' }))
+        );
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `utils.sha3('${args[0]}', { encoding: 'hex' })`,
+          'hash',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The hexified data to convert into a SHA3 hash',
+          placeholder: 'i.e. 0x68656c6c6f20776f726c64',
+        },
+      ],
     },
   },
   net_version: {
     description: 'Returns the current network id.',
     ethers: {
       exec: (provider, proto, ...args) => {
-        return provider.getNetwork();
+        return provider.send('net_version');
       },
       codeSample: (url, ...args) => {
-        return ethersTemplate('getNetwork()', 'network', url);
+        return ethersTemplate(`send('net_version')`, 'network', url);
       },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.net.getId();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.net.getId()`, 'network', url);
+      },
       args: [],
     },
   },
@@ -91,8 +128,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.net.isListening();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.net.isListening()`, 'listening', url);
+      },
       args: [],
     },
   },
@@ -108,8 +149,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.net.getPeerCount();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.net.getPeerCount()`, 'peers', url);
+      },
       args: [],
     },
   },
@@ -125,8 +170,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getProtocolVersion();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getProtocolVersion()`, 'version', url);
+      },
       args: [],
     },
   },
@@ -142,8 +191,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.isSyncing();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.isSyncing()`, 'isSyncing', url);
+      },
       args: [],
     },
   },
@@ -159,8 +212,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getCoinbase();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getCoinbase()`, 'coinbase', url);
+      },
       args: [],
     },
   },
@@ -176,8 +233,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.isMining();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.isMining()`, 'isMining', url);
+      },
       args: [],
     },
   },
@@ -194,8 +255,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getHashrate();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getHashrate()`, 'hashRate', url);
+      },
       args: [],
     },
   },
@@ -206,13 +271,17 @@ const Web3RpcCalls = {
         return provider.getGasPrice();
       },
       codeSample: (url, ...args) => {
-        return ethersTemplate('getGasPrice()', url);
+        return ethersTemplate('getGasPrice()', 'gasPrice', url);
       },
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getGasPrice();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getGasPrice()`, 'gasPrice', url);
+      },
       args: [],
     },
   },
@@ -228,8 +297,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getAccounts();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getAccounts()`, 'accts', url);
+      },
       args: [],
     },
   },
@@ -245,8 +318,12 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBlockNumber();
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getBlockNumber()`, 'blockNum', url);
+      },
       args: [],
     },
   },
@@ -278,9 +355,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBalance(args[0], args[1]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getBalance('${args[0]}', '${args[1]}')`,
+          'balance',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to check for balance',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
   },
   eth_getStorageAt: {
@@ -740,11 +837,11 @@ const Web3RpcCalls = {
       'Returns the information about a transaction requested by transaction hash.',
     ethers: {
       exec: (provider, proto, ...args) => {
-        return provider.waitForTransaction(args[0], 0);
+        return provider.send('eth_getTransactionByHash', [args[0]]);
       },
       codeSample: (url, ...args) => {
         return ethersTemplate(
-          `waitForTransaction('${args[0]}', 0)`,
+          `.send('eth_getTransactionByHash', ['${args[0]}'])`,
           'txInfo',
           url
         );
