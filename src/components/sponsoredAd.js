@@ -25,7 +25,10 @@ const SponsoredAd = ({ visible, setSponsorVisible }) => {
                 </p>
                 <p className="mt-1 text-sm leading-5 text-gray-500">
                   Huge thanks to QuikNode for letting us build EtherFlow with
-                  ⚡️ fast nodes.
+                  <span role="img" aria-label="lightning">
+                    ⚡️
+                  </span>{' '}
+                  fast nodes.
                 </p>
                 <div className="mt-4 flex">
                   <span className="inline-flex rounded-md shadow-sm">

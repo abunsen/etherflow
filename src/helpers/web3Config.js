@@ -1499,8 +1499,23 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          provider.eth.subscribe('newBlockHeaders', (error, result) => {
+            if (!error) resolve(result);
+          })
+        );
+      },
+      codeSample: (url, ...args) => {
+        return `const Web3 = require("web3");
+// OR Web3 ethers from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.eth.subscribe('newBlockHeaders', console.log);
+})()`;
+      },
       args: [],
     },
   },
@@ -1522,14 +1537,21 @@ const filter = {
     },
     web3: {
       exec: (provider, proto, ...args) => {
-        return provider.eth.subscribe('pendingTransactions');
+        return new Promise((resolve, reject) =>
+          provider.eth.subscribe('pendingTransactions', (error, result) => {
+            if (!error) resolve(result);
+          })
+        );
       },
       codeSample: (url, ...args) => {
-        return web3Template(
-          "eth.subscribe('pendingTransactions')",
-          'filter',
-          url
-        );
+        return `const Web3 = require("web3");
+// OR Web3 ethers from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.eth.subscribe('pendingTransactions', console.log);
+})()`;
       },
       args: [],
     },
@@ -1578,8 +1600,16 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
   },
@@ -1601,8 +1631,16 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
   },
@@ -1624,8 +1662,16 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject(
+            'EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter.'
+          )
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* EtherFlow covers this method via eth_newFilter, eth_newBlockFilter and eth_newPendingTransactionFilter */';
+      },
       args: [],
     },
   },
@@ -1642,8 +1688,12 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getWork();
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(`eth.getWork()`, 'work', url);
+      },
       args: [],
     },
   },
@@ -1662,8 +1712,14 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
@@ -1682,8 +1738,14 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
