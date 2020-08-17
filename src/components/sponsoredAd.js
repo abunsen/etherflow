@@ -24,7 +24,7 @@ const SponsoredAd = ({ visible, setSponsorVisible }) => {
                   Sponsored by QuikNode
                 </p>
                 <p className="mt-1 text-sm leading-5 text-gray-500">
-                  Huge thanks to QuikNode for letting us build EtherFlow with
+                  Huge thanks to QuikNode for letting us build EtherFlow with{' '}
                   <span role="img" aria-label="lightning">
                     ⚡️
                   </span>{' '}
