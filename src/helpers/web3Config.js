@@ -414,9 +414,34 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getStorageAt(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `getStorageAt('${args[0]}', '${args[1]}', '${args[2]}')`,
+          'storage',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address of the storage',
+          placeholder: 'i.e. 0x91b51c173a4... or ENS domain',
+        },
+        {
+          type: 'textfield',
+          description: 'Hex of the position in the storage',
+          placeholder: 'i.e. 0x0, 0x1, 0x2...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
   },
   eth_getTransactionCount: {
@@ -447,9 +472,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getTransactionCount(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getTransactionCount('${args[0]}', '${args[1]}')`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to check for balance',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
   },
   eth_getBlockTransactionCountByHash: {
@@ -475,9 +520,23 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBlockTransactionCount(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getBlockTransactionCount('${args[0]}')`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get transaction count from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+      ],
     },
   },
   eth_getBlockTransactionCountByNumber: {
@@ -503,9 +562,24 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBlockTransactionCount(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getBlockTransactionCount('${args[0]}')`,
+          'txCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Integer in decimal format of a block to get transaction count from',
+          placeholder: 'i.e. 10674793',
+        },
+      ],
     },
   },
   eth_getUncleCountByBlockHash: {
@@ -531,9 +605,23 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.uncleCountCall(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.uncleCountCall('${args[0]}')`,
+          'uncleCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get uncle count from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+      ],
     },
   },
   eth_getUncleCountByBlockNumber: {
@@ -559,9 +647,24 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.uncleCountCall(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.uncleCountCall('${args[0]}')`,
+          'uncleCount',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Integer in decimal format of a block to get uncle count from',
+          placeholder: 'i.e. 10674793',
+        },
+      ],
     },
   },
   eth_getCode: {
@@ -592,9 +695,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getCode(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getCode('${args[0]}', '${args[1]}')`,
+          'code',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Address to fetch code from',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textfield',
+          description:
+            'Integer block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
   },
   eth_sign: {
@@ -695,9 +818,24 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.sendSignedTransaction(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.sendSignedTransaction('${args[0]}')`,
+          'tx',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'The previously signed transaction data',
+          placeholder:
+            'i.e. 0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+        },
+      ],
     },
   },
   eth_call: {
@@ -787,9 +925,28 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBlock(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getBlock('${args[0]}', ${args[1]})`,
+          'blockData',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'boolean',
+          description: 'Should we return full transaction objects?',
+          placeholder: '',
+        },
+      ],
     },
   },
   eth_getBlockByNumber: {
@@ -827,9 +984,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getBlock(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getBlock('${args[0]}', ${args[1]})`,
+          'blockData',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Integer in decimal format of a block number to get information from',
+          placeholder: 'i.e. 10674793',
+        },
+        {
+          type: 'boolean',
+          description: 'Should we return full transaction objects?',
+          placeholder: '',
+        },
+      ],
     },
   },
   eth_getTransactionByHash: {
@@ -841,7 +1018,7 @@ const Web3RpcCalls = {
       },
       codeSample: (url, ...args) => {
         return ethersTemplate(
-          `.send('eth_getTransactionByHash', ['${args[0]}'])`,
+          `send('eth_getTransactionByHash', ['${args[0]}'])`,
           'txInfo',
           url
         );
@@ -856,9 +1033,20 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getTransaction(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(`eth.getTransaction('${args[0]}')`, 'txInfo', url);
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+        },
+      ],
     },
   },
   eth_getTransactionByBlockHashAndIndex: {
@@ -891,9 +1079,28 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getTransactionFromBlock(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getTransactionFromBlock('${args[0]}', '${args[1]}')`,
+          'txInfo',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'textfield',
+          description: 'Integer in decimal format of tx position in the block',
+          placeholder: 'i.e. 0, 1, 2...',
+        },
+      ],
     },
   },
   eth_getTransactionByBlockNumberAndIndex: {
@@ -927,9 +1134,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getTransactionFromBlock(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getTransactionFromBlock('${args[0]}', '${args[1]}')`,
+          'txInfo',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Integer in decimal format, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. 10674793',
+        },
+        {
+          type: 'textfield',
+          description: 'Integer in decimal format of tx position in the block',
+          placeholder: 'i.e. 0, 1, 2...',
+        },
+      ],
     },
   },
   eth_getTransactionReceipt: {
@@ -955,9 +1182,24 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getTransactionReceipt(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getTransactionReceipt('${args[0]}')`,
+          'txReceipt',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+        },
+      ],
     },
   },
   eth_getUncleByBlockHashAndIndex: {
