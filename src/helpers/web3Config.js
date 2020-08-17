@@ -1475,8 +1475,14 @@ const filter = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not YET support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow yet */';
+      },
       args: [],
     },
   },
