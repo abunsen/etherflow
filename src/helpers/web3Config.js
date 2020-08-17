@@ -1211,7 +1211,7 @@ const Web3RpcCalls = {
       },
       codeSample: (url, ...args) => {
         return ethersTemplate(
-          `send('eth_getUncleByBlockHashAndIndex', ['${args[0]}', '${args[1]}']`,
+          `send('eth_getUncleByBlockHashAndIndex', ['${args[0]}', '${args[1]}'])`,
           'blockUncle',
           url
         );
@@ -1230,9 +1230,28 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getUncle(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getUncle('${args[0]}', '${args[1]}')`,
+          'blockUncle',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a block to get information from',
+          placeholder: 'i.e. 0x16c4e370736...',
+        },
+        {
+          type: 'textfield',
+          description: 'The uncle’s index position as an integer.',
+          placeholder: 'i.e. 0, 1, 2...',
+        },
+      ],
     },
   },
   eth_getUncleByBlockNumberAndIndex: {
@@ -1264,9 +1283,29 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
-      args: [],
+      exec: (provider, proto, ...args) => {
+        return provider.eth.getUncle(...args);
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          `eth.getUncle('${args[0]}', '${args[1]}')`,
+          'blockUncle',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description:
+            'Integer in decimal format of a block to get transaction count from',
+          placeholder: 'i.e. 10674793',
+        },
+        {
+          type: 'textfield',
+          description: 'The uncle’s index position as an integer.',
+          placeholder: 'i.e. 0, 1, 2...',
+        },
+      ],
     },
   },
   eth_getCompilers: {
@@ -1281,8 +1320,14 @@ const Web3RpcCalls = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('web3.js does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by web3.js */';
+      },
       args: [],
     },
   },
@@ -1309,8 +1354,14 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('web3.js does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by web3.js */';
+      },
       args: [],
     },
   },
@@ -1336,8 +1387,14 @@ const Web3RpcCalls = {
       ],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('web3.js does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by web3.js */';
+      },
       args: [],
     },
   },
@@ -1464,8 +1521,16 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return provider.eth.subscribe('pendingTransactions');
+      },
+      codeSample: (url, ...args) => {
+        return web3Template(
+          "eth.subscribe('pendingTransactions')",
+          'filter',
+          url
+        );
+      },
       args: [],
     },
   },
@@ -1484,8 +1549,14 @@ const filter = {
       args: [],
     },
     web3: {
-      exec: (provider, proto, ...args) => {},
-      codeSample: (url, ...args) => {},
+      exec: (provider, proto, ...args) => {
+        return new Promise((resolve, reject) =>
+          reject('EtherFlow does not support this method.')
+        );
+      },
+      codeSample: (url, ...args) => {
+        return '/* Not Supported by EtherFlow */';
+      },
       args: [],
     },
   },
