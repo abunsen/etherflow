@@ -606,11 +606,11 @@ const Web3RpcCalls = {
     },
     web3: {
       exec: (provider, proto, ...args) => {
-        return provider.eth.uncleCountCall(args[0]);
+        return provider.eth.getBlockUncleCount(args[0]);
       },
       codeSample: (url, ...args) => {
         return web3Template(
-          `eth.uncleCountCall('${args[0]}')`,
+          `eth.getBlockUncleCount('${args[0]}')`,
           'uncleCount',
           url
         );
@@ -648,11 +648,11 @@ const Web3RpcCalls = {
     },
     web3: {
       exec: (provider, proto, ...args) => {
-        return provider.eth.uncleCountCall(args[0]);
+        return provider.eth.getBlockUncleCount(args[0]);
       },
       codeSample: (url, ...args) => {
         return web3Template(
-          `eth.uncleCountCall('${args[0]}')`,
+          `eth.getBlockUncleCount('${args[0]}')`,
           'uncleCount',
           url
         );
@@ -926,7 +926,7 @@ const Web3RpcCalls = {
     },
     web3: {
       exec: (provider, proto, ...args) => {
-        return provider.eth.getBlock(...args);
+        return provider.eth.getBlock(args[0], args[1] === 'true');
       },
       codeSample: (url, ...args) => {
         return web3Template(
@@ -985,7 +985,7 @@ const Web3RpcCalls = {
     },
     web3: {
       exec: (provider, proto, ...args) => {
-        return provider.eth.getBlock(...args);
+        return provider.eth.getBlock(args[0], args[1] === 'true');
       },
       codeSample: (url, ...args) => {
         return web3Template(
@@ -1699,58 +1699,6 @@ const filter = {
       },
       codeSample: (url, ...args) => {
         return ethersTemplate(`eth.getWork()`, 'work', url);
-      },
-      args: [],
-    },
-  },
-  eth_submitWork: {
-    disabled: true,
-    description: '🚫 This method is not YET supported in EtherFlow!',
-    ethers: {
-      exec: (provider, proto, ...args) => {
-        return new Promise((resolve, reject) =>
-          reject('EtherFlow does not support this method.')
-        );
-      },
-      codeSample: (url, ...args) => {
-        return '/* Not Supported by EtherFlow */';
-      },
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {
-        return new Promise((resolve, reject) =>
-          reject('EtherFlow does not support this method.')
-        );
-      },
-      codeSample: (url, ...args) => {
-        return '/* Not Supported by EtherFlow */';
-      },
-      args: [],
-    },
-  },
-  eth_submitHashrate: {
-    disabled: true,
-    description: '🚫 This method is not YET supported in EtherFlow!',
-    ethers: {
-      exec: (provider, proto, ...args) => {
-        return new Promise((resolve, reject) =>
-          reject('EtherFlow does not support this method.')
-        );
-      },
-      codeSample: (url, ...args) => {
-        return '/* Not Supported by EtherFlow */';
-      },
-      args: [],
-    },
-    web3: {
-      exec: (provider, proto, ...args) => {
-        return new Promise((resolve, reject) =>
-          reject('EtherFlow does not support this method.')
-        );
-      },
-      codeSample: (url, ...args) => {
-        return '/* Not Supported by EtherFlow */';
       },
       args: [],
     },
