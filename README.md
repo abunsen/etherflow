@@ -45,6 +45,7 @@ Please feel free to add tests, change the code so it has better organization, et
 # Wishlist (in order of priority)
 
 - [ ] Enable ABI upload for smart contracts on eth_call
+- [ ] Make trace_call use the ABI from point above
 - [ ] Enable eth_newFilter for web3.js
 - [ ] Only show websocket sample code if websocket enabled
 - [ ] Finish adding support for trace calls https://openethereum.github.io/wiki/JSONRPC-trace-module
