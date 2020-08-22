@@ -32,6 +32,36 @@ const web3Template = (methodCall, varName, url) => {
 `;
 };
 
+const web3TraceTemplate = (
+  rpcMethod,
+  methodCall,
+  args,
+  formatters,
+  varName,
+  url
+) => {
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: '${methodCall}',
+        call: '${rpcMethod}',
+        params: ${formatters.length},
+        inputFormatter: [${formatters.join(', ')}],
+      },
+    ],
+  });
+  const ${varName} = await web3.${methodCall}('${args.join(', ')}');
+  console.log(${varName});
+})()
+`;
+};
+
 const Web3RpcCalls = {
   web3_clientVersion: {
     description: 'Returns the current client version.',
@@ -1704,7 +1734,8 @@ const filter = {
     },
   },
   trace_block: {
-    description: 'Returns traces created at given block.',
+    description:
+      'Returns traces created at given block (OpenEthereum or Parity only).',
     ethers: {
       exec: (provider, proto, ...args) => {
         return provider.send('trace_block', [args[0]]);
@@ -1740,26 +1771,14 @@ const filter = {
         return provider.parityTraceBlock(args[0]);
       },
       codeSample: (url, ...args) => {
-        return `const Web3 = require("web3");
-// OR import Web3 from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.extend({
-    methods: [
-      {
-        name: 'parityTraceBlock',
-        call: 'trace_block',
-        params: 1,
-        inputFormatter: [web3.utils.numberToHex],
-      },
-    ],
-  });
-  const trace = await web3.parityTraceBlock('${args[0]}');
-  console.log(trace);
-})()
-`;
+        return web3TraceTemplate(
+          'trace_block',
+          'parityTraceBlock',
+          [args[0]],
+          ['web3.utils.numberToHex'],
+          'trace',
+          url
+        );
       },
       args: [
         {
@@ -1767,6 +1786,63 @@ const filter = {
           description:
             'Hex block number, or the string "latest", "earliest" or "pending"',
           placeholder: 'i.e. latest or pending',
+        },
+      ],
+    },
+  },
+  trace_transaction: {
+    description:
+      'Returns all traces of given transaction (OpenEthereum or Parity only).',
+    ethers: {
+      exec: (provider, proto, ...args) => {
+        return provider.send('trace_transaction', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('trace_transaction', ['${args[0]}'])`,
+          'trace',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+        },
+      ],
+    },
+    web3: {
+      exec: (provider, proto, ...args) => {
+        provider.extend({
+          methods: [
+            {
+              name: 'parityTraceTx',
+              call: 'trace_transaction',
+              params: 1,
+              inputFormatter: [null],
+            },
+          ],
+        });
+        return provider.parityTraceTx(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return web3TraceTemplate(
+          'trace_transaction',
+          'parityTraceTx',
+          args,
+          ['null'],
+          'trace',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textarea',
+          description: 'Hash of a transaction to get information for',
+          placeholder:
+            'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
         },
       ],
     },
