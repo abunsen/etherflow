@@ -1,0 +1,42 @@
+<center>
+  <h2 align="center">EtherFlow</h2>
+
+  <p align="center">
+    A tool for interacting/debugging with Ethereum JSON-RPC and generating sample code.
+    <br />
+    <a href="https://etherflow.quiknode.io">View Demo</a>
+    ·
+    <a href="https://github.com/abunsen/etherflow/issues/new?assignees=&labels=&template=bug_report.md&title=">Report Bug</a>
+    ·
+    <a href="https://github.com/abunsen/etherflow/issues/new?assignees=&labels=&template=feature_request.md&title=">Request Feature</a>
+  </p>
+</center>
+
+# About
+
+EtherFlow is a tool for sending requests to Ethereum JSON-RPC endpoints without having to write code. It supports a most standard RPC methods and the [trace module for Parity/OpenEthereum](https://openethereum.github.io/wiki/JSONRPC-trace-module#trace_transaction). It updates the URL and embeds your RPC endpoint, preferred library, method call and arguments in the URL for easy sharing to any relevant parties.
+
+# Quik Start
+
+If you don't want to install anything just go here: https://etherflow.quiknode.io
+
+You can also just run this in your terminal:
+
+```
+git clone git@github.com:abunsen/etherflow.git && cd etherflow && npm install && npm start
+```
+
+# Adding a new lib
+
+There is a folder `etherflow -> src -> helpers -> libs` [link](tree/master/src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough. If you'd like to add a new back end library, please [open an issue](https://github.com/abunsen/etherflow/issues/new?assignees=&labels=&template=feature_request.md&title=New+Backend+Lib+Support) so we can discuss the best way to support this!
+
+# Contributing
+
+Please feel free to add tests, change the code so it has better organization, etc. I'm very happy to receive PRs.
+
+# Todo
+
+- [ ] Only show websocket sample code if websocket enabled
+- [ ] Enable eth_newFilter for web3.js
+- [ ] Enable ABI upload for smart contracts on eth_call
+- [ ] Finish adding support for trace calls https://openethereum.github.io/wiki/JSONRPC-trace-module
