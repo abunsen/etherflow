@@ -42,9 +42,9 @@ If you'd like to add a new back end library, please [open an issue](https://gith
 
 Please feel free to add tests, change the code so it has better organization, etc. I'm very happy to receive PRs.
 
-# Todo
+# Wishlist (in order of priority)
 
-- [ ] Only show websocket sample code if websocket enabled
-- [ ] Enable eth_newFilter for web3.js
 - [ ] Enable ABI upload for smart contracts on eth_call
+- [ ] Enable eth_newFilter for web3.js
+- [ ] Only show websocket sample code if websocket enabled
 - [ ] Finish adding support for trace calls https://openethereum.github.io/wiki/JSONRPC-trace-module
