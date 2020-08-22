@@ -4,11 +4,15 @@ import { AppContext } from '../context';
 import { useParams } from '@reach/router';
 
 const CodeSampleContainer = () => {
-  const { codeSampleVisible, toggleSampleCode, argumentList } = useContext(
-    AppContext
-  );
+  const { codeSampleVisible, toggleSampleCode } = useContext(AppContext);
   const params = useParams();
-  const { web3URL = '', web3Lib = '', currentMethod = '' } = params;
+  const {
+    web3URL = '',
+    web3Lib = '',
+    currentMethod = '',
+    formArgs = '',
+  } = params;
+  const argumentList = formArgs.split('/');
   const hideCodeSample = () => {
     toggleSampleCode();
   };

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Textarea = ({ placeholder, updateValue }) => {
+const Textarea = ({ placeholder, updateValue, initialVal }) => {
   return (
     <textarea
       id="tx-data"
@@ -8,11 +8,12 @@ const Textarea = ({ placeholder, updateValue }) => {
       className="form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
       onChange={(e) => updateValue(e.target.value)}
       placeholder={placeholder}
+      defaultValue={initialVal}
     ></textarea>
   );
 };
 
-const TextField = ({ placeholder, updateValue }) => {
+const TextField = ({ placeholder, updateValue, initialVal }) => {
   return (
     <span className="mb-4">
       <input
@@ -20,12 +21,13 @@ const TextField = ({ placeholder, updateValue }) => {
         type="text"
         placeholder={placeholder}
         onChange={(e) => updateValue(e.target.value)}
+        defaultValue={initialVal}
       />
     </span>
   );
 };
 
-const BooleanSelect = ({ updateValue }) => {
+const BooleanSelect = ({ initialVal, updateValue }) => {
   return (
     <select
       defaultValue=""
@@ -36,31 +38,49 @@ const BooleanSelect = ({ updateValue }) => {
         {' '}
         -- select an option --{' '}
       </option>
-      <option value={false}>false</option>
-      <option value={true}>true</option>
+      <option value={false} selected={initialVal == 'false'}>
+        false
+      </option>
+      <option value={true} selected={initialVal == 'true'}>
+        true
+      </option>
     </select>
   );
 };
 
-const Field = ({ description, placeholder, type, updateValue }) => {
+const Field = ({ description, placeholder, type, val, updateValue }) => {
   let actualField;
   switch (type) {
     case 'textarea':
       actualField = (
-        <Textarea updateValue={updateValue} placeholder={placeholder} />
+        <Textarea
+          updateValue={updateValue}
+          placeholder={placeholder}
+          initialVal={val}
+        />
       );
       break;
     case 'textfield':
       actualField = (
-        <TextField updateValue={updateValue} placeholder={placeholder} />
+        <TextField
+          updateValue={updateValue}
+          placeholder={placeholder}
+          initialVal={val}
+        />
       );
       break;
     case 'boolean':
-      actualField = <BooleanSelect updateValue={updateValue} />;
+      actualField = (
+        <BooleanSelect updateValue={updateValue} initialVal={val} />
+      );
       break;
     default:
       actualField = (
-        <Textarea updateValue={updateValue} placeholder={placeholder} />
+        <Textarea
+          updateValue={updateValue}
+          placeholder={placeholder}
+          initialVal={val}
+        />
       );
   }
 
@@ -108,12 +128,9 @@ const MethodCall = ({
         <Field
           {...arg}
           key={i}
+          val={argumentList[i]}
           updateValue={(val) => {
-            setArgumentList((argList) => {
-              const argsCopy = [...argList];
-              argsCopy[i] = val;
-              return argsCopy;
-            });
+            setArgumentList(val, i);
           }}
         />
       ))}

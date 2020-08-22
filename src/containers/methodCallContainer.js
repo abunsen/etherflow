@@ -3,22 +3,33 @@ import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
 import buildProvider from '../helpers/buildProvider';
-import { useParams } from '@reach/router';
+import { navigate, useParams } from '@reach/router';
 
 const MethodCallContainer = () => {
   const params = useParams();
-  const {
-    codeSampleVisible,
-    toggleSampleCode,
-    argumentList,
-    setArgumentList,
-  } = useContext(AppContext);
+  const { codeSampleVisible, toggleSampleCode } = useContext(AppContext);
   const { addToLog } = useContext(LogContext);
   const logItem = useCallback(addToLog, []);
-  const { web3URL = '', web3Lib = '', currentMethod = '' } = params;
+  const {
+    web3URL = '',
+    web3Lib = '',
+    currentMethod = '',
+    formArgs = '',
+  } = params;
+  const argumentList = formArgs.split('/');
   const web3Method = Web3RpcCalls[currentMethod] || {};
   const { description, disabled } = web3Method || {};
   const { args, exec } = web3Method[web3Lib] || {};
+  const setArgumentList = (val, index) => {
+    const argsCopy = [...argumentList];
+    argsCopy[index] = val;
+    // bad pattern?
+    let joinedArgs = argsCopy.join('/');
+    let url = `/${web3URL}/${web3Lib}/`;
+    if (currentMethod) url += `${currentMethod}/`;
+    if (args.length > 0) url += `${joinedArgs}`;
+    navigate(url);
+  };
   const runRequest = (args) => {
     logItem({
       method: 'info',

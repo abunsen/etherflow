@@ -778,9 +778,8 @@ const Web3JSCalls = {
     args: [
       {
         type: 'textfield',
-        description:
-          'Hex block number, or the string "latest", "earliest" or "pending"',
-        placeholder: 'i.e. latest or pending',
+        description: 'Integer of block number only',
+        placeholder: 'i.e. 10708846',
       },
     ],
   },

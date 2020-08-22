@@ -38,7 +38,7 @@ const App = () => (
     <Wrapper path="/:web3URL" />
     <Wrapper path="/:web3URL/:web3Lib" />
     <Wrapper path="/:web3URL/:web3Lib/:currentMethod" />
-    <Wrapper path="/:web3URL/:web3Lib/:currentMethod/*" />
+    <Wrapper path="/:web3URL/:web3Lib/:currentMethod/*formArgs" />
   </Router>
 );
 
