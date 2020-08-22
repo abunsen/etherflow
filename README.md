@@ -28,7 +28,15 @@ git clone git@github.com:abunsen/etherflow.git && cd etherflow && npm install &&
 
 # Adding a new lib
 
-There is a folder `etherflow -> src -> helpers -> libs` [link](tree/master/src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough. If you'd like to add a new back end library, please [open an issue](https://github.com/abunsen/etherflow/issues/new?assignees=&labels=&template=feature_request.md&title=New+Backend+Lib+Support) so we can discuss the best way to support this!
+There is a folder `etherflow -> src -> helpers -> libs` [link](tree/master/src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough:
+
+1. Add a file in the above folder with the `<name of the lib>.js`
+2. Add a every single supported RPC method from [here](tree/master/src/helpers/web3Config.js) to an exported object
+3. Add `exec`, `codeSample` and `args` to each method
+4. Test it
+5. You're done!
+
+If you'd like to add a new back end library, please [open an issue](https://github.com/abunsen/etherflow/issues/new?assignees=&labels=&template=feature_request.md&title=New+Backend+Lib+Support) so we can discuss the best way to support this!
 
 # Contributing
 

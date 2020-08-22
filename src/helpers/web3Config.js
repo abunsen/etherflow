@@ -273,6 +273,12 @@ const Web3RpcCalls = {
     web3: calls.web3.default.trace_transaction,
     ethers: calls.ethers.default.trace_transaction,
   },
+  trace_get: {
+    description:
+      'Returns trace at given position (OpenEthereum or Parity only).',
+    web3: calls.web3.default.trace_get,
+    ethers: calls.ethers.default.trace_get,
+  },
 };
 
 export default Web3RpcCalls;

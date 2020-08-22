@@ -843,6 +843,33 @@ const filter = {
       },
     ],
   },
+  trace_get: {
+    exec: (provider, proto, ...args) => {
+      return provider.send('trace_get', [args[0], (args[1] || '').split(',')]);
+    },
+    codeSample: (url, ...args) => {
+      return ethersTemplate(
+        `send('trace_get', ['${args[0]}', ['${(args[1] || '')
+          .split(',')
+          .join(', ')}']])`,
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Hash of a transaction to get information for',
+        placeholder:
+          'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+      },
+      {
+        type: 'textfield',
+        description: 'Index positions of the traces, separated by commas',
+        placeholder: 'i.e. 0x0,0x2,0x4',
+      },
+    ],
+  },
 };
 
 export default EthersCalls;

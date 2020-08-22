@@ -38,10 +38,10 @@ const BooleanSelect = ({ initialVal, updateValue }) => {
         {' '}
         -- select an option --{' '}
       </option>
-      <option value={false} selected={initialVal == 'false'}>
+      <option value={false} selected={initialVal === 'false'}>
         false
       </option>
-      <option value={true} selected={initialVal == 'true'}>
+      <option value={true} selected={initialVal === 'true'}>
         true
       </option>
     </select>

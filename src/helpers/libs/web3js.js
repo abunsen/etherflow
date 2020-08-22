@@ -816,6 +816,45 @@ const Web3JSCalls = {
       },
     ],
   },
+  trace_get: {
+    exec: (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceGet',
+            call: 'trace_get',
+            params: 1,
+            inputFormatter: [null, provider.utils.numberToHex],
+          },
+        ],
+      });
+      return provider.parityTraceGet(args[0], args[1].split(','));
+    },
+    codeSample: (url, ...args) => {
+      return web3TraceTemplate(
+        'trace_get',
+        'parityTraceGet',
+        args,
+        ['null', 'web3.utils.numberToHex'],
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Hash of a transaction to get information for',
+        placeholder:
+          'i.e. 0x95575ee5f6cdb3907cd2983516f33828855ed4f12320103dc8524b96a5a5414b',
+      },
+      {
+        type: 'textfield',
+        description:
+          'Integer index positions of the traces, separated by commas',
+        placeholder: 'i.e. 0,1,2',
+      },
+    ],
+  },
 };
 
 export default Web3JSCalls;
