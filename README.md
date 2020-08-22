@@ -14,7 +14,7 @@
 
 # About
 
-EtherFlow is a tool for sending requests to Ethereum JSON-RPC endpoints without having to write code. It supports a most standard RPC methods and the [trace module for Parity/OpenEthereum](https://openethereum.github.io/wiki/JSONRPC-trace-module#trace_transaction). It updates the URL and embeds your RPC endpoint, preferred library, method call and arguments in the URL for easy sharing to any relevant parties.
+EtherFlow is a tool for sending requests to Ethereum JSON-RPC endpoints without having to write code. It supports most standard RPC methods and the [trace module for Parity/OpenEthereum](https://openethereum.github.io/wiki/JSONRPC-trace-module#trace_transaction). It updates the URL and embeds your RPC endpoint, preferred library, method call and arguments in the URL for easy sharing to any relevant parties.
 
 # Quik Start
 
