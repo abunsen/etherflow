@@ -29,7 +29,7 @@
     "lodash": "^4.17.19",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^3.4.3",
     "react-syntax-highlighter": "^12.2.1",
     "tailwindcss": "^1.5.1",
     "web3": "^1.2.11"

@@ -21,7 +21,7 @@ const ethersTemplate = (methodCall, varName, url) => {
 
 const web3Template = (methodCall, varName, url) => {
   return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
+// OR import Web3 from 'web3';
 
 // HTTP version
 (async () => {
@@ -1698,9 +1698,77 @@ const filter = {
         return provider.eth.getWork();
       },
       codeSample: (url, ...args) => {
-        return ethersTemplate(`eth.getWork()`, 'work', url);
+        return web3Template(`eth.getWork()`, 'work', url);
       },
       args: [],
+    },
+  },
+  trace_block: {
+    description: 'Returns traces created at given block.',
+    ethers: {
+      exec: (provider, proto, ...args) => {
+        return provider.send('trace_block', [args[0]]);
+      },
+      codeSample: (url, ...args) => {
+        return ethersTemplate(
+          `send('trace_block', ['${args[0]}'])`,
+          'trace',
+          url
+        );
+      },
+      args: [
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
+    },
+    web3: {
+      exec: (provider, proto, ...args) => {
+        provider.extend({
+          methods: [
+            {
+              name: 'parityTraceBlock',
+              call: 'trace_block',
+              params: 1,
+              inputFormatter: [provider.utils.numberToHex],
+            },
+          ],
+        });
+        return provider.parityTraceBlock(args[0]);
+      },
+      codeSample: (url, ...args) => {
+        return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: 'parityTraceBlock',
+        call: 'trace_block',
+        params: 1,
+        inputFormatter: [web3.utils.numberToHex],
+      },
+    ],
+  });
+  const trace = await web3.parityTraceBlock('${args[0]}');
+  console.log(trace);
+})()
+`;
+      },
+      args: [
+        {
+          type: 'textfield',
+          description:
+            'Hex block number, or the string "latest", "earliest" or "pending"',
+          placeholder: 'i.e. latest or pending',
+        },
+      ],
     },
   },
 };
