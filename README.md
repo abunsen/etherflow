@@ -28,10 +28,10 @@ git clone git@github.com:abunsen/etherflow.git && cd etherflow && npm install &&
 
 # Adding a new lib
 
-There is a folder `etherflow -> src -> helpers -> libs` [link](blob/tree/master/src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough:
+There is a folder `etherflow -> src -> helpers -> libs` [link](src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough:
 
 1. Add a file in the above folder with the `<name of the lib>.js`
-2. Add a every single supported RPC method from [here](blob/tree/master/src/helpers/web3Config.js) to an exported object
+2. Add a every single supported RPC method from [here](src/helpers/web3Config.js) to an exported object
 3. Add `exec`, `codeSample` and `args` to each method
 4. Test it
 5. You're done!
