@@ -35,7 +35,7 @@ const web3TraceTemplate = (
       },
     ],
   });
-  const ${varName} = await web3.${methodCall}('${args.join(', ')}');
+  const ${varName} = await web3.${methodCall}('${args.join("', '")}');
   console.log(${varName});
 })()
 `;
@@ -852,6 +852,81 @@ const Web3JSCalls = {
         description:
           'Integer index positions of the traces, separated by commas',
         placeholder: 'i.e. 0,1,2',
+      },
+    ],
+  },
+  trace_rawTransaction: {
+    exec: (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceRawTx',
+            call: 'trace_rawTransaction',
+            params: 2,
+            inputFormatter: [null, null],
+          },
+        ],
+      });
+      return provider.parityTraceRawTx(args[0], [args[1]]);
+    },
+    codeSample: (url, ...args) => {
+      return web3TraceTemplate(
+        'trace_rawTransaction',
+        'parityTraceRawTx',
+        [args[0], [args[1]]],
+        ['null', 'null'],
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Raw transaction data.',
+        placeholder:
+          'i.e. 0xf86a8086d55698372431831e848094f0109fc8df283027b6285cc889f5aa624eac1f55843b9aca008025a009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428',
+      },
+      {
+        type: 'textfield',
+        description: 'Type of trace, one of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace',
+      },
+    ],
+  },
+  trace_replayBlockTransactions: {
+    exec: (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceBlockTx',
+            call: 'trace_replayBlockTransactions',
+            params: 2,
+            inputFormatter: [provider.utils.numberToHex, null],
+          },
+        ],
+      });
+      return provider.parityTraceBlockTx(args[0], [args[1]]);
+    },
+    codeSample: (url, ...args) => {
+      return web3TraceTemplate(
+        'trace_replayBlockTransactions',
+        'parityTraceBlockTx',
+        [args[0], [args[1]]],
+        ['web3.utils.numberToHex', 'null'],
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Integer of block number only',
+        placeholder: 'i.e. 10708846',
+      },
+      {
+        type: 'textfield',
+        description: 'Type of trace, one of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace',
       },
     ],
   },

@@ -282,11 +282,13 @@ const Web3RpcCalls = {
   trace_rawTransaction: {
     description:
       'Traces a call to `eth_sendRawTransaction` without making the call, returning the traces.',
+    web3: calls.web3.default.trace_rawTransaction,
     ethers: calls.ethers.default.trace_rawTransaction,
   },
   trace_replayBlockTransactions: {
     description:
       'Replays all transactions in a block returning the requested traces for each transaction.',
+    web3: calls.web3.default.trace_replayBlockTransactions,
     ethers: calls.ethers.default.trace_replayBlockTransactions,
   },
 };
