@@ -870,6 +870,59 @@ const filter = {
       },
     ],
   },
+  trace_rawTransaction: {
+    exec: (provider, proto, ...args) => {
+      return provider.send('trace_rawTransaction', [args[0], [args[1]]]);
+    },
+    codeSample: (url, ...args) => {
+      return ethersTemplate(
+        `send('trace_rawTransaction', ['${args[0]}', ['${args[1]}']])`,
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Raw transaction data.',
+        placeholder:
+          'i.e. 0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+      },
+      {
+        type: 'textfield',
+        description: 'Type of trace, one of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace',
+      },
+    ],
+  },
+  trace_replayBlockTransactions: {
+    exec: (provider, proto, ...args) => {
+      return provider.send('trace_replayBlockTransactions', [
+        args[0],
+        [args[1]],
+      ]);
+    },
+    codeSample: (url, ...args) => {
+      return ethersTemplate(
+        `send('trace_replayBlockTransactions', ['${args[0]}', ['${args[1]}']])`,
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description:
+          'Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. latest or pending',
+      },
+      {
+        type: 'textfield',
+        description: 'Type of trace, one of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace',
+      },
+    ],
+  },
 };
 
 export default EthersCalls;
