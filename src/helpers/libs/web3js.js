@@ -930,6 +930,134 @@ const Web3JSCalls = {
       },
     ],
   },
+  trace_replayTransaction: {
+    exec: (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceReplayTx',
+            call: 'trace_replayTransaction',
+            params: 2,
+            inputFormatter: [null, null],
+          },
+        ],
+      });
+      return provider.parityTraceReplayTx(args[0], [args[1]]);
+    },
+    codeSample: (url, ...args) => {
+      return web3TraceTemplate(
+        'trace_replayTransaction',
+        'parityTraceReplayTx',
+        [args[0], [args[1]]],
+        ['null', 'null'],
+        'trace',
+        url
+      );
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Hash of a transaction to get trace for',
+        placeholder:
+          'i.e. 0x02d4a872e096445e80d05276ee756cefef7f3b376bcec14246469c0cd97dad8f',
+      },
+      {
+        type: 'textfield',
+        description: 'Type of trace, one of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace',
+      },
+    ],
+  },
+  trace_filter: {
+    exec: (provider, proto, ...args) => {
+      const filter = {};
+      filter.fromBlock = args[0] ? args[0] : 'latest';
+      filter.toBlock = args[1] ? args[1] : 'latest';
+      if (args[2] !== '') filter.fromAddress = [args[2]];
+      if (args[3] !== '') filter.toAddress = [args[3]];
+      if (args[4] !== '') filter.after = +args[4];
+      if (args[5] !== '') filter.count = +args[5];
+
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceFilter',
+            call: 'trace_filter',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      return provider.parityTraceFilter(filter);
+    },
+    codeSample: (url, ...args) => {
+      return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: 'parityTraceFilter',
+        call: 'trace_filter',
+        params: 1,
+        inputFormatter: [null],
+      },
+    ],
+  });
+  const trace = await web3.parityTraceFilter({
+    "fromBlock": "${args[0] || 'latest'}",
+    "toBlock": "${args[1] || 'latest'}",${
+        args[2] ? '\n\t"fromAddress": ["' + args[2] + '"],' : ''
+      }${args[3] ? '\n\t"toAddress": ["' + args[3] + '"],' : ''}${
+        args[4] ? '\n\t"after": ' + args[3] + ',' : ''
+      }${args[4] ? '\n\t"count": ' + args[4] + ',' : ''}
+  });
+  console.log(trace);
+})()
+`;
+    },
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'fromBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0xA37D49',
+      },
+      {
+        type: 'textfield',
+        description:
+          'toBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0xA37E63',
+      },
+      {
+        type: 'textarea',
+        description:
+          'fromAddress: (optional) Contract address or a list of addresses from which logs should originate.',
+        placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'toAddress: (optional) Contract address or a list of addresses from which logs should originate.',
+        placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+      },
+      {
+        type: 'textfield',
+        description:
+          'topics: (optional) The offset trace number as an integer.',
+        placeholder: 'i.e. 1000',
+      },
+      {
+        type: 'textfield',
+        description:
+          'topics: (optional) The number of traces to display in a batch as an integer.',
+        placeholder: 'i.e. 10',
+      },
+    ],
+  },
 };
 
 export default Web3JSCalls;

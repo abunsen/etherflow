@@ -291,6 +291,16 @@ const Web3RpcCalls = {
     web3: calls.web3.default.trace_replayBlockTransactions,
     ethers: calls.ethers.default.trace_replayBlockTransactions,
   },
+  trace_replayTransaction: {
+    description: 'Replays a transaction, returning the traces.',
+    web3: calls.web3.default.trace_replayTransaction,
+    ethers: calls.ethers.default.trace_replayTransaction,
+  },
+  trace_filter: {
+    description: 'Returns traces matching given filter.',
+    web3: calls.web3.default.trace_filter,
+    ethers: calls.ethers.default.trace_filter,
+  },
 };
 
 export default Web3RpcCalls;
