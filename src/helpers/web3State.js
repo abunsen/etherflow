@@ -36,8 +36,8 @@ const web3State = async (url) => {
   }
 
   return {
-    web3Version: `${version?.split('//')[0]} ${
-      version?.split('//')[1]?.split('-')[0]
+    web3Version: `${version?.split('/')[0].replace('/', '')} ${
+      version?.split('/')[1]?.split('-')[0]
     }`,
     lastBlock: blockNum,
     wssConnects: sockConnect,
