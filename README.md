@@ -14,7 +14,7 @@
 
 # About
 
-EtherFlow is a tool for sending requests to Ethereum JSON-RPC endpoints without having to write code. It supports a most standard RPC methods and the [trace module for Parity/OpenEthereum](https://openethereum.github.io/wiki/JSONRPC-trace-module#trace_transaction). It updates the URL and embeds your RPC endpoint, preferred library, method call and arguments in the URL for easy sharing to any relevant parties.
+EtherFlow is a tool for sending requests to Ethereum JSON-RPC endpoints without having to write code. It supports most standard RPC methods and the [trace module for Parity/OpenEthereum](https://openethereum.github.io/wiki/JSONRPC-trace-module#trace_transaction). It updates the URL and embeds your RPC endpoint, preferred library, method call and params in the URL for easy sharing to any relevant parties.
 
 # Quik Start
 
@@ -28,10 +28,10 @@ git clone git@github.com:abunsen/etherflow.git && cd etherflow && npm install &&
 
 # Adding a new lib
 
-There is a folder `etherflow -> src -> helpers -> libs` [link](tree/master/src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough:
+There is a folder `etherflow -> src -> helpers -> libs` [link](src/helpers/libs) that contains all of the supported libraries. If you'd like to add a new front end library, it's easy enough:
 
 1. Add a file in the above folder with the `<name of the lib>.js`
-2. Add a every single supported RPC method from [here](tree/master/src/helpers/web3Config.js) to an exported object
+2. Add a every single supported RPC method from [here](src/helpers/web3Config.js) to an exported object
 3. Add `exec`, `codeSample` and `args` to each method
 4. Test it
 5. You're done!
@@ -45,6 +45,7 @@ Please feel free to add tests, change the code so it has better organization, et
 # Wishlist (in order of priority)
 
 - [ ] Enable ABI upload for smart contracts on eth_call
+- [ ] Make trace_call use the ABI from point above
 - [ ] Enable eth_newFilter for web3.js
 - [ ] Only show websocket sample code if websocket enabled
 - [ ] Finish adding support for trace calls https://openethereum.github.io/wiki/JSONRPC-trace-module
