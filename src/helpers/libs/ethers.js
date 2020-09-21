@@ -28,9 +28,9 @@ const contractTemplate = (methodName, address, abi, args, url) => {
   // HTTP version
   (async () => {
     const provider = new ethers.providers.JsonRpcProvider('${url}');
-    const contract = new ethers.Contract(${address}, ${abi}, provider);
-    const ${methodName} = await contract.functions[${methodName}](${args});
-    console.log(${methodName});
+    const contract = new ethers.Contract('${address}', ${abi}, provider);
+    const response = await contract.functions[${methodName}](${args});
+    console.log(response);
   })()
   `;
 };
