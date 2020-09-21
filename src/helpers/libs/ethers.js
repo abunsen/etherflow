@@ -1,3 +1,5 @@
+import ethers from 'ethers';
+
 const ethersTemplate = (methodCall, varName, url) => {
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
@@ -17,6 +19,20 @@ const ethersTemplate = (methodCall, varName, url) => {
   console.log(${varName});
 })()
 `;
+};
+
+// TODO: Add Websocket sample, make ABI text wrap
+const contractTemplate = (methodName, address, abi, args, url) => {
+  return `const ethers = require("ethers");
+  // OR import ethers from 'ethers';
+  // HTTP version
+  (async () => {
+    const provider = new ethers.providers.JsonRpcProvider('${url}');
+    const contract = new ethers.Contract(${address}, ${abi}, provider);
+    const ${methodName} = await contract.functions[${methodName}](${args});
+    console.log(${methodName});
+  })()
+  `;
 };
 
 const EthersCalls = {
@@ -371,14 +387,13 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return provider.getBalance(...args);
+      const [address, abi, methodName, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[methodName](...rest);
     },
     codeSample: (url, ...args) => {
-      return ethersTemplate(
-        `getBalance('${args[0]}', '${args[1]}')`,
-        'balance',
-        url
-      );
+      const [address, abi, methodName, ...rest] = args;
+      return contractTemplate(methodName, address, abi, rest, url);
     },
     args: [
       {
@@ -394,7 +409,7 @@ const EthersCalls = {
       },
       {
         type: 'dropdown',
-        description: 'Method',
+        description: 'Method name',
       },
     ],
   },

@@ -21,6 +21,7 @@ const MethodCallContainer = () => {
   const { description, disabled } = web3Method || {};
   const { args, exec } = web3Method[web3Lib] || {};
   const setArgumentList = (val, index) => {
+    // TODO: Check for ABI argument and convert
     const argsCopy = [...argumentList];
     argsCopy[index] = val;
     // bad pattern?
