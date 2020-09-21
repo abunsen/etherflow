@@ -139,8 +139,7 @@ const Web3RpcCalls = {
     ethers: calls.ethers.default.eth_sendRawTransaction,
   },
   eth_call: {
-    disabled: true,
-    description: '🚫 This method is not YET supported in EtherFlow!',
+    description: 'Calls a method on a contract',
     web3: calls.web3.default.eth_call,
     ethers: calls.ethers.default.eth_call,
   },
