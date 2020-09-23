@@ -1,6 +1,11 @@
 import * as calls from './libs';
 
 const Web3RpcCalls = {
+  contract_function: {
+    description: 'Calls a specific READ function on a contract',
+    web3: calls.web3.default.contract_function,
+    ethers: calls.ethers.default.contract_function,
+  },
   web3_clientVersion: {
     description: 'Returns the current client version.',
     web3: calls.web3.default.web3_clientVersion,
@@ -139,7 +144,8 @@ const Web3RpcCalls = {
     ethers: calls.ethers.default.eth_sendRawTransaction,
   },
   eth_call: {
-    description: 'Calls a method on a contract',
+    disabled: true,
+    description: '🚫 This method is not YET supported in EtherFlow!',
     web3: calls.web3.default.eth_call,
     ethers: calls.ethers.default.eth_call,
   },

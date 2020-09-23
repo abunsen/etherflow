@@ -36,6 +36,34 @@ const contractTemplate = (methodName, address, abi, args, url) => {
 };
 
 const EthersCalls = {
+  contract_function: {
+    exec: (provider, proto, ...args) => {
+      const [address, abi, methodName, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[methodName](...rest);
+    },
+    codeSample: (url, ...args) => {
+      const [address, abi, methodName, ...rest] = args;
+      return contractTemplate(methodName, address, abi, rest, url);
+    },
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'ABI of contract',
+        placeholder:
+          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
+  },
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
       return provider.send('web3_clientVersion');
@@ -387,31 +415,14 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
-      const contract = new ethers.Contract(address, abi, provider);
-      return contract.functions[methodName](...rest);
+      return new Promise((resolve, reject) =>
+        reject('EtherFlow does not support this method.')
+      );
     },
     codeSample: (url, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
-      return contractTemplate(methodName, address, abi, rest, url);
+      return '/* Not Supported by EtherFlow */';
     },
-    args: [
-      {
-        type: 'textarea',
-        description: 'Address of contract',
-        placeholder: 'i.e. 0x91b51c173a4...',
-      },
-      {
-        type: 'textarea',
-        description: 'ABI of contract',
-        placeholder:
-          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
-      },
-      {
-        type: 'dropdown',
-        description: 'Method name',
-      },
-    ],
+    args: [],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {
