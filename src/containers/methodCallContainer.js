@@ -29,7 +29,7 @@ const MethodCallContainer = () => {
   const [argumentList, setArgumentList] = useState([]);
   const [abi, setAbi] = useState([]);
 
-  const updateURLWithArgument = (val, index) => {
+  const updateURL = (val, index) => {
     const argsCopy = [...argumentList];
     argsCopy[index] = val;
     // bad pattern?
@@ -55,22 +55,14 @@ const MethodCallContainer = () => {
       return setArgsWithAbi(argsCopy);
     }
     if (index === 2) {
-      console.log(val);
       // Function changed. Update function name
-      updateURLWithArgument(val, index);
+      updateURL(val, index);
       // Update URL with new ABI snippet
       const newAbi = functionFromVal({ val, abi });
-      return updateURLWithArgument(btoa(newAbi), 1);
+      return updateURL(btoa(newAbi), 1);
     }
-    // All other cases, just update the URL
-    return updateURLWithArgument(val, index);
+    return updateURL(val, index); // All other cases, just update the URL
   };
-
-  // const handleAbiFromUrl = (abi) => {
-  //   // This should only contain one function, so we need to udpdate the dropdown options
-  //   const {abi, filteredFunctions} = parseAbi(abi)
-  //   setContractFunctionArgument({func: filteredFunctions[0], name: getUrlValFromFunction(filteredFunctions[0]},1)
-  // }
 
   const parseFormArgs = (args) => {
     // Enable Base64 encoding
@@ -93,7 +85,7 @@ const MethodCallContainer = () => {
   const onUpdateArguments = (val, index) => {
     if (currentMethod === CONTRACT_FUNCTION_METHOD)
       return setContractFunctionArgument(val, index);
-    updateURLWithArgument(val, index);
+    updateURL(val, index);
   };
 
   const runRequest = (args) => {
