@@ -59,9 +59,9 @@ const Dropdown = ({ initialVal, dropdownOptions = [], updateValue }) => {
         {' '}
         -- select an option --{' '}
       </option>
-      {dropdownOptions.map((choice, index) => (
-        <option key={`${index}-${choice}`} value={choice.value}>
-          {choice.displayName}
+      {dropdownOptions.map((option, index) => (
+        <option key={`${index}-${option.name}`} value={option.value}>
+          {option.name}
         </option>
       ))}
     </select>
