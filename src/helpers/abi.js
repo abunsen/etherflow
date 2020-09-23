@@ -1,5 +1,5 @@
 const ERROR_MESSAGE_PARSE_ABI =
-  'Error parsing ABI. Please ensure valid JSON format. Example:\n\n[{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
+  'Error parsing ABI. Please ensure valid JSON format. Example: [{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
 const AVAILABLE_FUNCTIONS_MESSAGE = 'Available READ functions:';
 
 const getFunctionDisplayName = ({ name, inputs }) => {
@@ -12,7 +12,7 @@ const getFunctionDisplayName = ({ name, inputs }) => {
   }`;
 };
 
-export const getUrlValFromFunction = (func) => {
+const valFromFunction = (func) => {
   // Convert a function entity to a URL-friendly string
   try {
     const functionObj = JSON.parse(func);
@@ -26,20 +26,21 @@ export const getUrlValFromFunction = (func) => {
   }
 };
 
-export const getFunctionFromUrlVal = ({ abi, val }) => {
-  // Convert a URL-friendly string to a function entity
+export const functionFromVal = ({ val, abi }) => {
   return abi[0];
+  // Convert a URL-friendly string to a function entity
 };
 
 export const parseAbi = (rawAbi) => {
   try {
-    let parsedAbi = JSON.parse(rawAbi);
+    let parsedAbi = rawAbi;
+    if (typeof rawAbi !== 'Object') parsedAbi = JSON.parse(rawAbi);
     // Handle edge case when single function entity is passed
     if (!parsedAbi.length) parsedAbi = [parsedAbi];
     const filteredFunctions = parsedAbi
       .filter((func) => func.stateMutability === 'view')
       .map((func) => ({
-        value: JSON.stringify(func),
+        value: valFromFunction(func),
         name: getFunctionDisplayName({
           name: func.name,
           inputs: func.inputs,

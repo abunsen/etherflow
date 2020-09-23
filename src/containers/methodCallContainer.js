@@ -3,11 +3,7 @@ import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
 import buildProvider from '../helpers/buildProvider';
-import {
-  getUrlValFromFunction,
-  getFunctionFromUrlVal,
-  parseAbi,
-} from '../helpers/abi';
+import { parseAbi, functionFromVal } from '../helpers/abi';
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'contract_function';
@@ -31,6 +27,7 @@ const MethodCallContainer = () => {
 
   const [argsWithAbi, setArgsWithAbi] = useState(args);
   const [argumentList, setArgumentList] = useState([]);
+  const [abi, setAbi] = useState([]);
 
   const updateURLWithArgument = (val, index) => {
     const argsCopy = [...argumentList];
@@ -47,31 +44,42 @@ const MethodCallContainer = () => {
     if (index === 1) {
       // ABI changed. Update the avaialable dropdown options with the function
       const { error, abi, filteredFunctions } = parseAbi(val);
-      if (error) return;
-      // return logItem({
-      //   method: 'error',
-      //   data: ['🚨 Error:', error],
-      // });
+      if (error)
+        return logItem({
+          method: 'error',
+          data: ['🚨 Error:', error],
+        });
+      setAbi(abi);
       const argsCopy = argsWithAbi;
       argsCopy[2] = { ...args[2], dropdownOptions: filteredFunctions };
       return setArgsWithAbi(argsCopy);
     }
     if (index === 2) {
-      // Function changed. Update URL with new ABI snippet, and update function name
-      updateURLWithArgument(getUrlValFromFunction(val), index);
-      return updateURLWithArgument(btoa(val), 1);
+      console.log(val);
+      // Function changed. Update function name
+      updateURLWithArgument(val, index);
+      // Update URL with new ABI snippet
+      const newAbi = functionFromVal({ val, abi });
+      return updateURLWithArgument(btoa(newAbi), 1);
     }
     // All other cases, just update the URL
     return updateURLWithArgument(val, index);
   };
+
+  // const handleAbiFromUrl = (abi) => {
+  //   // This should only contain one function, so we need to udpdate the dropdown options
+  //   const {abi, filteredFunctions} = parseAbi(abi)
+  //   setContractFunctionArgument({func: filteredFunctions[0], name: getUrlValFromFunction(filteredFunctions[0]},1)
+  // }
 
   const parseFormArgs = (args) => {
     // Enable Base64 encoding
     const list = args.split('/').map((arg) => {
       if (/[A-Za-z0-9+/=]\=$/.test(arg)) {
         // This is an ABI function entity!
-        setContractFunctionArgument(atob(arg), 1);
-        return atob(arg);
+        const decoded = atob(arg);
+        setContractFunctionArgument(decoded, 1);
+        return decoded;
       }
       return arg;
     });
