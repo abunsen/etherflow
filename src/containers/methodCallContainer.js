@@ -8,7 +8,7 @@ import { navigate, useParams } from '@reach/router';
 const CONTRACT_FUNCTION_METHOD = 'contract_function';
 const ERROR_MESSAGE_PARSE_ABI =
   'Error parsing ABI. Please ensure valid JSON format. Example:\n\n[{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-const AVAILABLE_FUNCTIONS_MESSAGE = 'Available functions are: ';
+const AVAILABLE_FUNCTIONS_MESSAGE = 'Available READ functions:';
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -28,14 +28,33 @@ const MethodCallContainer = () => {
 
   const [argsWithAbi, setArgsWithAbi] = useState(args);
 
+  const getFunctionDisplayName = ({ name, inputs }) => {
+    const inputTypesText = inputs.map(
+      (input, index) => `${input.type}${index < inputs.length && ','}`
+    );
+    return `${name}${
+      inputs.length > 0 ? ` (${inputs.length} inputs: ${inputTypesText})` : ''
+    }`;
+  };
+
   const parseAbi = (rawAbi) => {
     try {
-      const parsed = JSON.parse(rawAbi);
-      console.log(AVAILABLE_FUNCTIONS_MESSAGE);
-      console.log(parsed.map((func, index) => `${func.name}`));
+      const parsedAbi = JSON.parse(rawAbi);
       // TODO: Filter write functions
-      // TODO: also return function list
-      return { parsedAbi: parsed };
+      const filteredFunctions = parsedAbi
+        .filter((func) => func.stateMutability === 'view')
+        .map((func) => ({
+          ...func,
+          displayName: getFunctionDisplayName({
+            name: func.name,
+            inputs: func.inputs,
+          }),
+        }));
+      console.log(
+        AVAILABLE_FUNCTIONS_MESSAGE,
+        filteredFunctions.map((func) => func.name)
+      );
+      return { abi: parsedAbi, filteredFunctions };
     } catch (e) {
       return { error: ERROR_MESSAGE_PARSE_ABI };
     }

@@ -60,8 +60,8 @@ const Dropdown = ({ initialVal, choiceList = [], updateValue }) => {
         -- select an option --{' '}
       </option>
       {choiceList.map((choice, index) => (
-        <option key={`${index}-${choice}`} value={choice}>
-          {choice}
+        <option key={`${index}-${choice}`} value={choice.value}>
+          {choice.displayName}
         </option>
       ))}
     </select>
@@ -74,7 +74,7 @@ const Field = ({
   type,
   val,
   updateValue,
-  choiceList,
+  functionOptions,
 }) => {
   let actualField;
   switch (type) {
@@ -84,7 +84,7 @@ const Field = ({
           updateValue={updateValue}
           placeholder={placeholder}
           initialVal={val}
-          choiceList={choiceList}
+          choiceList={functionOptions}
         />
       );
       break;
