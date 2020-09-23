@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const Textarea = ({ placeholder, updateValue, initialVal }) => {
   return (
@@ -48,7 +48,7 @@ const BooleanSelect = ({ initialVal, updateValue }) => {
   );
 };
 
-const Dropdown = ({ initialVal, choiceList = [], updateValue }) => {
+const Dropdown = ({ initialVal, dropdownOptions = [], updateValue }) => {
   return (
     <select
       defaultValue=""
@@ -59,7 +59,7 @@ const Dropdown = ({ initialVal, choiceList = [], updateValue }) => {
         {' '}
         -- select an option --{' '}
       </option>
-      {choiceList.map((choice, index) => (
+      {dropdownOptions.map((choice, index) => (
         <option key={`${index}-${choice}`} value={choice.value}>
           {choice.displayName}
         </option>
@@ -74,7 +74,7 @@ const Field = ({
   type,
   val,
   updateValue,
-  functionOptions,
+  dropdownOptions,
 }) => {
   let actualField;
   switch (type) {
@@ -84,7 +84,7 @@ const Field = ({
           updateValue={updateValue}
           placeholder={placeholder}
           initialVal={val}
-          choiceList={functionOptions}
+          dropdownOptions={dropdownOptions}
         />
       );
       break;

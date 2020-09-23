@@ -3,12 +3,10 @@ import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
 import buildProvider from '../helpers/buildProvider';
+import { getFunctionDisplayName, parseAbi } from '../helpers/abi';
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'contract_function';
-const ERROR_MESSAGE_PARSE_ABI =
-  'Error parsing ABI. Please ensure valid JSON format. Example:\n\n[{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-const AVAILABLE_FUNCTIONS_MESSAGE = 'Available READ functions:';
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -28,46 +26,16 @@ const MethodCallContainer = () => {
 
   const [argsWithAbi, setArgsWithAbi] = useState(args);
 
-  const getFunctionDisplayName = ({ name, inputs }) => {
-    const inputTypesText = inputs.map(
-      (input, index) => `${input.type}${index < inputs.length && ','}`
-    );
-    return `${name}${
-      inputs.length > 0 ? ` (${inputs.length} inputs: ${inputTypesText})` : ''
-    }`;
-  };
-
-  const parseAbi = (rawAbi) => {
-    try {
-      const parsedAbi = JSON.parse(rawAbi);
-      // TODO: Filter write functions
-      const filteredFunctions = parsedAbi
-        .filter((func) => func.stateMutability === 'view')
-        .map((func) => ({
-          ...func,
-          displayName: getFunctionDisplayName({
-            name: func.name,
-            inputs: func.inputs,
-          }),
-        }));
-      console.log(
-        AVAILABLE_FUNCTIONS_MESSAGE,
-        filteredFunctions.map((func) => func.name)
-      );
-      return { abi: parsedAbi, filteredFunctions };
-    } catch (e) {
-      return { error: ERROR_MESSAGE_PARSE_ABI };
-    }
-  };
-
   const setAbiArgument = (newAbi, index) => {
     if (index === 1) {
       // ABI changed. Update method choices
-      const { error, parsedAbi } = parseAbi(newAbi);
+      const { error, abi, filteredFunctions } = parseAbi(newAbi);
       if (error) return console.log(error);
       // Update args with new function options
       const argsCopy = argsWithAbi;
-      argsCopy[3] = { ...args[3], functionNames: ['func1'] };
+      argsCopy[2] = { ...args[2], dropdownOptions: filteredFunctions };
+      console.log(args);
+      console.log(argsCopy);
       setArgsWithAbi(argsCopy);
       // Update URL
     }
