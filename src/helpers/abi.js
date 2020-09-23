@@ -26,15 +26,16 @@ export const getUrlValFromFunction = (func) => {
   }
 };
 
-export const getFunctionFromUrlVal = ({ abi, key }) => {
+export const getFunctionFromUrlVal = ({ abi, val }) => {
   // Convert a URL-friendly string to a function entity
   return abi[0];
 };
 
 export const parseAbi = (rawAbi) => {
   try {
-    const parsedAbi = JSON.parse(rawAbi);
-    // TODO: Filter write functions
+    let parsedAbi = JSON.parse(rawAbi);
+    // Handle edge case when single function entity is passed
+    if (!parsedAbi.length) parsedAbi = [parsedAbi];
     const filteredFunctions = parsedAbi
       .filter((func) => func.stateMutability === 'view')
       .map((func) => ({
@@ -44,10 +45,10 @@ export const parseAbi = (rawAbi) => {
           inputs: func.inputs,
         }),
       }));
-    console.log(
-      AVAILABLE_FUNCTIONS_MESSAGE,
-      filteredFunctions.map((func) => func.name)
-    );
+    // console.log(
+    //   AVAILABLE_FUNCTIONS_MESSAGE,
+    //   filteredFunctions.map((func) => func.name)
+    // );
     return { abi: parsedAbi, filteredFunctions };
   } catch (e) {
     return { error: ERROR_MESSAGE_PARSE_ABI };

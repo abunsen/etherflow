@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState } from 'react';
+import React, { useContext, useCallback, useState, useEffect } from 'react';
 import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
@@ -11,13 +11,6 @@ import {
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'contract_function';
-
-const parseFormArgs = (args) => {
-  return args.split('/').map((arg) => {
-    if (/[A-Za-z0-9+/=]\=$/.test(arg)) return atob(arg);
-    return arg;
-  });
-};
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -32,12 +25,12 @@ const MethodCallContainer = () => {
     formArgs = '',
   } = params;
 
-  const argumentList = parseFormArgs(formArgs);
   const web3Method = Web3RpcCalls[currentMethod] || {};
   const { description, disabled } = web3Method || {};
   const { args, exec } = web3Method[web3Lib] || {};
 
   const [argsWithAbi, setArgsWithAbi] = useState(args);
+  const [argumentList, setArgumentList] = useState([]);
 
   const updateURLWithArgument = (val, index) => {
     const argsCopy = [...argumentList];
@@ -54,7 +47,11 @@ const MethodCallContainer = () => {
     if (index === 1) {
       // ABI changed. Update the avaialable dropdown options with the function
       const { error, abi, filteredFunctions } = parseAbi(val);
-      if (error) return console.log(error);
+      if (error) return;
+      // return logItem({
+      //   method: 'error',
+      //   data: ['🚨 Error:', error],
+      // });
       const argsCopy = argsWithAbi;
       argsCopy[2] = { ...args[2], dropdownOptions: filteredFunctions };
       return setArgsWithAbi(argsCopy);
@@ -68,7 +65,24 @@ const MethodCallContainer = () => {
     return updateURLWithArgument(val, index);
   };
 
-  const setArgumentList = (val, index) => {
+  const parseFormArgs = (args) => {
+    // Enable Base64 encoding
+    const list = args.split('/').map((arg) => {
+      if (/[A-Za-z0-9+/=]\=$/.test(arg)) {
+        // This is an ABI function entity!
+        setContractFunctionArgument(atob(arg), 1);
+        return atob(arg);
+      }
+      return arg;
+    });
+    setArgumentList(list);
+  };
+
+  useEffect(() => {
+    parseFormArgs(formArgs);
+  }, [formArgs]);
+
+  const onUpdateArguments = (val, index) => {
     if (currentMethod === CONTRACT_FUNCTION_METHOD)
       return setContractFunctionArgument(val, index);
     updateURLWithArgument(val, index);
@@ -104,7 +118,7 @@ const MethodCallContainer = () => {
     disabled,
     args: argsWithAbi,
     runRequest,
-    setArgumentList,
+    onUpdateArguments,
     argumentList,
   };
 

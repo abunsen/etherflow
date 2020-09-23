@@ -137,7 +137,7 @@ const MethodCall = ({
   args,
   runRequest,
   argumentList,
-  setArgumentList,
+  onUpdateArguments,
 }) => {
   return (
     <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen overflow-x-scroll">
@@ -158,7 +158,7 @@ const MethodCall = ({
           key={i}
           val={argumentList[i]}
           updateValue={(val) => {
-            setArgumentList(val, i);
+            onUpdateArguments(val, i);
           }}
         />
       ))}
