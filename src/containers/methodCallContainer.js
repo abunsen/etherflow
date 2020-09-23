@@ -7,6 +7,7 @@ import { parseAbi, functionFromVal } from '../helpers/abi';
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'contract_function';
+const ERROR_MESSAGE_ISSUE_DECODING = 'Error decoding the URL';
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -68,10 +69,14 @@ const MethodCallContainer = () => {
     // Enable Base64 encoding
     const list = args.split('/').map((arg) => {
       if (/[A-Za-z0-9+/=]\=$/.test(arg)) {
-        // This is an ABI function entity!
-        const decoded = atob(arg);
-        setContractFunctionArgument(decoded, 1);
-        return decoded;
+        try {
+          // This is an ABI function entity!
+          const decoded = atob(arg);
+          setContractFunctionArgument(decoded, 1);
+          return decoded;
+        } catch (e) {
+          return ERROR_MESSAGE_ISSUE_DECODING;
+        }
       }
       return arg;
     });
