@@ -33,14 +33,18 @@ export const functionFromVal = ({ val, abi }) => {
   // Convert a URL-friendly string to a function entity
 };
 
-export const parseAbi = (rawAbi) => {
+const isValidUrl = (string) => {
   try {
-    if (!rawAbi) return { error: ERROR_MESSAGE_NO_ABI };
-    let parsedAbi = rawAbi;
-    if (typeof rawAbi !== 'object') parsedAbi = JSON.parse(rawAbi);
-    // Handle edge case when single function entity is passed
-    if (!parsedAbi.length) parsedAbi = [parsedAbi];
-    const filteredFunctions = parsedAbi
+    new URL(string);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
+export const getFilteredFunctions = (abi) => {
+  try {
+    return abi
       .filter((func) => func.stateMutability === 'view')
       .map((func) => ({
         value: valFromFunction(func),
@@ -49,12 +53,27 @@ export const parseAbi = (rawAbi) => {
           inputs: func.inputs,
         }),
       }));
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const fetchOrParseAbi = (abiVal) => {
+  if (!abiVal) return { error: ERROR_MESSAGE_NO_ABI };
+  try {
+    let abi = abiVal;
+    if (isValidUrl(abiVal)) abi = fetch(abiVal);
+    if (typeof abi !== 'object') abi = JSON.parse(abiVal);
+    // Handle edge case when single function entity is passed
+    if (!abi.length) abi = [abi];
+
     // console.log(
     //   AVAILABLE_FUNCTIONS_MESSAGE,
     //   filteredFunctions.map((func) => func.name)
     // );
-    return { abi: parsedAbi, filteredFunctions };
+    return { abi };
   } catch (e) {
+    console.log(e);
     return { error: ERROR_MESSAGE_PARSE_ABI };
   }
 };

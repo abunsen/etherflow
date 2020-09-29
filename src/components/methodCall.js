@@ -48,17 +48,20 @@ const BooleanSelect = ({ initialVal, updateValue }) => {
   );
 };
 
-const Dropdown = ({ initialVal, dropdownOptions = [], updateValue }) => {
+const Dropdown = ({ dropdownOptions = [], updateValue, disabled }) => {
   return (
     <select
       defaultValue=""
       className="my-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
       onChange={(e) => updateValue(e.target.value)}
+      disabled={disabled}
     >
-      <option disabled value="">
-        {' '}
-        -- select an option --{' '}
-      </option>
+      {dropdownOptions.length !== 1 && (
+        <option disabled value="">
+          {' '}
+          -- select an option --{' '}
+        </option>
+      )}
       {dropdownOptions.map((option, index) => (
         <option key={`${index}-${option.name}`} value={option.value}>
           {option.name}
@@ -75,6 +78,7 @@ const Field = ({
   val,
   updateValue,
   dropdownOptions,
+  disabled,
 }) => {
   let actualField;
   switch (type) {
@@ -83,8 +87,8 @@ const Field = ({
         <Dropdown
           updateValue={updateValue}
           placeholder={placeholder}
-          initialVal={val}
           dropdownOptions={dropdownOptions}
+          disabled={disabled}
         />
       );
       break;
