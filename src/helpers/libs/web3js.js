@@ -42,28 +42,6 @@ const web3TraceTemplate = (
 };
 
 const Web3JSCalls = {
-  contract_function: {
-    exec: (provider, proto, ...args) => {
-      // TODO
-    },
-    codeSample: (url, ...args) => {
-      // TODO
-    },
-    args: [
-      {
-        type: 'textarea',
-        description: 'Address of contract',
-        placeholder: 'i.e. 0x91b51c173a4...',
-      },
-      {
-        type: 'textarea',
-        description: 'ABI of contract',
-        placeholder:
-          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
-      },
-      // TODO
-    ],
-  },
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
       return provider.eth.getNodeInfo();
@@ -427,14 +405,25 @@ const Web3JSCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      // TODO
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      // TODO
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'ABI of contract',
+        placeholder:
+          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
+      },
+      // TODO
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {

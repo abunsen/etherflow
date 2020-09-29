@@ -27,43 +27,16 @@ const contractTemplate = (methodName, address, abi, args, url) => {
   // OR import ethers from 'ethers';
   // HTTP version
   (async () => {
+    const abi = '${abi}'
     const provider = new ethers.providers.JsonRpcProvider('${url}');
-    const contract = new ethers.Contract('${address}', ${abi}, provider);
-    const response = await contract.functions[${methodName}](${args});
+    const contract = new ethers.Contract('${address}', abi, provider);
+    const response = await contract.functions.${methodName}(${args});
     console.log(response);
   })()
   `;
 };
 
 const EthersCalls = {
-  contract_function: {
-    exec: (provider, proto, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
-      const contract = new ethers.Contract(address, abi, provider);
-      return contract.functions[methodName](...rest);
-    },
-    codeSample: (url, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
-      return contractTemplate(methodName, address, abi, rest, url);
-    },
-    args: [
-      {
-        type: 'textarea',
-        description: 'Address of contract',
-        placeholder: 'i.e. 0x91b51c173a4...',
-      },
-      {
-        type: 'textarea',
-        description: 'ABI of contract',
-        placeholder:
-          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
-      },
-      {
-        type: 'dropdown',
-        description: 'Function name (READ only)',
-      },
-    ],
-  },
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
       return provider.send('web3_clientVersion');
@@ -415,14 +388,31 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      const [address, abi, methodName, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[methodName](...rest);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      const [address, abi, methodName, ...rest] = args;
+      return contractTemplate(methodName, address, abi, rest, url);
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'ABI of contract (URL or function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {
