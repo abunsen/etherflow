@@ -28,9 +28,9 @@ const MethodCallContainer = () => {
 
   const web3Method = Web3RpcCalls[currentMethod] || {};
   const { description, disabled } = web3Method || {};
-  const { args: methodArgs, exec } = web3Method[web3Lib] || {};
+  const { args: initialFormInputs, exec } = web3Method[web3Lib] || {};
 
-  const [availableArgs, setAvailableArgs] = useState(methodArgs);
+  const [formInputs, setFormInputs] = useState(initialFormInputs);
   const [argumentList, setArgumentList] = useState([]);
   const [abi, setAbi] = useState(null);
 
@@ -40,18 +40,18 @@ const MethodCallContainer = () => {
     let joinedArgs = argsList.join('/');
     let url = `/${web3URL}/${web3Lib}/`;
     if (currentMethod) url += `${currentMethod}/`;
-    if (availableArgs.length > 0) url += `${joinedArgs}`;
+    if (formInputs.length > 0) url += `${joinedArgs}`;
     navigate(url);
   };
 
   const onUpdateContractMethod = (methodId) => {
-    const newAvailableArguments = getArgumentsFromMethodId(methodId);
-    if (newAvailableArguments)
-      return setAvailableArgs([
-        ...availableArgs.slice(0, 3), // Discard method-specific arguments
-        ...newAvailableArguments,
+    const newFormInputs = getArgumentsFromMethodId(methodId);
+    if (newFormInputs)
+      return setFormInputs([
+        ...formInputs.slice(0, 3), // Discard existing method-specific inputs
+        ...newFormInputs,
       ]);
-    setAvailableArgs([...availableArgs.slice(0, 3)]);
+    setFormInputs([...formInputs.slice(0, 3)]);
   };
 
   const onUpdateArguments = (val, index) => {
@@ -65,13 +65,13 @@ const MethodCallContainer = () => {
 
   const onUpdateAbi = () => {
     const filteredMethods = getFilteredMethods(abi);
-    const availableArgsCopy = availableArgs;
-    availableArgsCopy[2] = {
-      ...availableArgs[2],
+    const formInputsCopy = formInputs;
+    formInputsCopy[2] = {
+      ...formInputs[2],
       dropdownOptions: filteredMethods,
       disabled: abi.length === 1,
     };
-    setAvailableArgs(availableArgsCopy);
+    setFormInputs(formInputsCopy);
     // If only one method, set it and disable the form
     if (abi.length === 1 && filteredMethods[0])
       onUpdateArguments(filteredMethods[0].value, 2);
@@ -131,6 +131,10 @@ const MethodCallContainer = () => {
     onUpdateAbi();
   }, [abi]);
 
+  useEffect(() => {
+    setFormInputs(...initialFormInputs);
+  }, [initialFormInputs]);
+
   // Parse URL arguments
   useEffect(() => {
     parseURL();
@@ -146,7 +150,7 @@ const MethodCallContainer = () => {
     web3URL,
     description,
     disabled: disabled || !isFormValid,
-    args: availableArgs,
+    args: formInputs,
     runRequest,
     onUpdateArguments,
     argumentList,

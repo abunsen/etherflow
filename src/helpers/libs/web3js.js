@@ -44,17 +44,17 @@ const web3TraceTemplate = (
 // TODO: Add Websocket example?
 const contractTemplate = (url, args) => {
   const [address, abi, method, ...restArgs] = args;
-  return `const ethers = require("ethers");
-  // OR import ethers from 'ethers';
-  // HTTP version
-  (async () => {
-    const abi = '${abi}'
-    const web3 = new Web3('${url}');
-    const contract = new web3.eth.Contract('${address}', abi);
-    const response = await contract.methods.${method}(${restArgs});
-    console.log(response);
-  })()
-  `;
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const abi = '${abi}'
+  const web3 = new Web3('${url}');
+  const contract = new web3.eth.Contract(abi, '${address}');
+  const response = await contract.methods.${method}(${restArgs});
+  console.log(response);
+})()`;
 };
 
 const Web3JSCalls = {
@@ -422,8 +422,8 @@ const Web3JSCalls = {
   eth_call: {
     exec: (provider, proto, ...args) => {
       const [address, abi, method, ...rest] = args;
-      const contract = new provider.eth.Contract(address, abi);
-      return contract.methods[method](...rest);
+      const contract = new provider.eth.Contract(JSON.parse(abi), address);
+      return contract.methods[method](...rest).call();
     },
     codeSample: (url, ...args) => {
       return contractTemplate(url, args);

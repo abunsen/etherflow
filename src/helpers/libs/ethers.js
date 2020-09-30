@@ -25,15 +25,16 @@ const ethersTemplate = (methodCall, varName, url) => {
 const contractTemplate = (url, args) => {
   const [address, abi, method, ...restArgs] = args;
   return `const ethers = require("ethers");
-  // OR import ethers from 'ethers';
-  // HTTP version
-  (async () => {
-    const abi = '${abi}'
-    const provider = new ethers.providers.JsonRpcProvider('${url}');
-    const contract = new ethers.Contract('${address}', abi, provider);
-    const response = await contract.functions.${method}(${restArgs});
-    console.log(response);
-  })()
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = '${abi}'
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const contract = new ethers.Contract('${address}', abi, provider);
+  const response = await contract.functions.${method}(${restArgs});
+  console.log(response);
+})()
   `;
 };
 
