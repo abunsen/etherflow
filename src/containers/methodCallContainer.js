@@ -7,6 +7,7 @@ import {
   fetchOrParseAbi,
   getFilteredMethods,
   getArgumentsFromMethodId,
+  parseMethodArgs,
 } from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
@@ -30,7 +31,7 @@ const MethodCallContainer = () => {
   const { description, disabled } = web3Method || {};
   const { args: initialFormInputs, exec } = web3Method[web3Lib] || {};
 
-  const [formInputs, setFormInputs] = useState(initialFormInputs);
+  const [formInputs, setFormInputs] = useState([]);
   const [argumentList, setArgumentList] = useState([]);
   const [abi, setAbi] = useState(null);
 
@@ -83,11 +84,18 @@ const MethodCallContainer = () => {
       data: [`🚀 Sending request for **${currentMethod}**:`],
     });
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
-    let callArguments = argumentList;
-    // TODO: Inject the ABI, instead of the URL
-    // if (currentMethod === CONTRACT_FUNCTION_METHOD)
-    //   callArguments[1] = JSON.stringify(abi);
-    exec(provider, proto, ...callArguments)
+    let args = argumentList.slice();
+    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
+      const [address, , methodId, ...methodSpecificArgs] = argumentList;
+      const [methodName, types] = methodId.split('-');
+      args = [
+        address,
+        abi,
+        methodName,
+        ...parseMethodArgs(methodSpecificArgs, types.split(',')),
+      ];
+    }
+    exec(provider, proto, ...args)
       .then((response) => {
         logItem({
           method: 'info',
@@ -132,7 +140,9 @@ const MethodCallContainer = () => {
   }, [abi]);
 
   useEffect(() => {
-    setFormInputs(...initialFormInputs);
+    if (!initialFormInputs || !initialFormInputs.length) return;
+    console.log(initialFormInputs);
+    setFormInputs(initialFormInputs);
   }, [initialFormInputs]);
 
   // Parse URL arguments

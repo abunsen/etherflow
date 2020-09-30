@@ -73,3 +73,10 @@ export const fetchOrParseAbi = async (abiVal) => {
     return { error: ERROR_MESSAGE_PARSE_ABI };
   }
 };
+
+export const parseMethodArgs = (args, types) => {
+  if (!args || !types) return null;
+  return types.map((type, index) => {
+    if (type === 'address') return `${args[index]}`;
+  });
+};
