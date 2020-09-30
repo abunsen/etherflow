@@ -35,10 +35,9 @@ const MethodCallContainer = () => {
   const [abi, setAbi] = useState(null);
 
   const updateURL = (val, index) => {
-    const argsCopy = formArgs.split('/');
-    argsCopy[index] = val;
-    // bad pattern?
-    let joinedArgs = argsCopy.join('/');
+    const argsList = formArgs.split('/');
+    argsList[index] = val;
+    let joinedArgs = argsList.join('/');
     let url = `/${web3URL}/${web3Lib}/`;
     if (currentMethod) url += `${currentMethod}/`;
     if (availableArgs.length > 0) url += `${joinedArgs}`;
@@ -84,10 +83,11 @@ const MethodCallContainer = () => {
       data: [`🚀 Sending request for **${currentMethod}**:`],
     });
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
-    const argumentListCopy = argumentList;
-    // Inject the ABI, instead of the URL
-    if (currentMethod === CONTRACT_FUNCTION_METHOD) argumentListCopy[1] = abi;
-    exec(provider, proto, ...argumentList)
+    let callArguments = argumentList;
+    // TODO: Inject the ABI, instead of the URL
+    // if (currentMethod === CONTRACT_FUNCTION_METHOD)
+    //   callArguments[1] = JSON.stringify(abi);
+    exec(provider, proto, ...callArguments)
       .then((response) => {
         logItem({
           method: 'info',
@@ -136,6 +136,8 @@ const MethodCallContainer = () => {
     parseURL();
   }, [formArgs]);
 
+  const isFormValid = argumentList[0] && argumentList[1] && argumentList[2];
+
   const contextProps = {
     codeSampleVisible,
     toggleSampleCode,
@@ -143,7 +145,7 @@ const MethodCallContainer = () => {
     web3Lib,
     web3URL,
     description,
-    disabled,
+    disabled: disabled || !isFormValid,
     args: availableArgs,
     runRequest,
     onUpdateArguments,

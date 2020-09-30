@@ -41,6 +41,22 @@ const web3TraceTemplate = (
 `;
 };
 
+// TODO: Add Websocket example?
+const contractTemplate = (url, args) => {
+  const [address, abi, method, ...restArgs] = args;
+  return `const ethers = require("ethers");
+  // OR import ethers from 'ethers';
+  // HTTP version
+  (async () => {
+    const abi = '${abi}'
+    const web3 = new Web3('${url}');
+    const contract = new web3.eth.Contract('${address}', abi);
+    const response = await contract.methods.${method}(${restArgs});
+    console.log(response);
+  })()
+  `;
+};
+
 const Web3JSCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -405,24 +421,31 @@ const Web3JSCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      // TODO
+      const [address, abi, method, ...rest] = args;
+      const contract = new provider.eth.Contract(address, abi);
+      return contract.methods[method](...rest);
     },
     codeSample: (url, ...args) => {
-      // TODO
+      return contractTemplate(url, args);
     },
     args: [
-      {
-        type: 'textarea',
-        description: 'Address of contract',
-        placeholder: 'i.e. 0x91b51c173a4...',
-      },
-      {
-        type: 'textarea',
-        description: 'ABI of contract',
-        placeholder:
-          'i.e. [{"inputs":[{"internalType":"uint256","name":"chainId...',
-      },
-      // TODO
+      [
+        {
+          type: 'textarea',
+          description: 'Address of contract',
+          placeholder: 'i.e. 0x91b51c173a4...',
+        },
+        {
+          type: 'textarea',
+          description: 'Contract ABI (URL or single function object)',
+          placeholder:
+            'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+        },
+        {
+          type: 'dropdown',
+          description: 'Function name (READ only)',
+        },
+      ],
     ],
   },
   eth_estimateGas: {

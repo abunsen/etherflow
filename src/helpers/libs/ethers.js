@@ -21,8 +21,9 @@ const ethersTemplate = (methodCall, varName, url) => {
 `;
 };
 
-// TODO: Add Websocket sample, make ABI text wrap
-const contractTemplate = (methodName, address, abi, args, url) => {
+// TODO: Add Websocket example?
+const contractTemplate = (url, args) => {
+  const [address, abi, method, ...restArgs] = args;
   return `const ethers = require("ethers");
   // OR import ethers from 'ethers';
   // HTTP version
@@ -30,7 +31,7 @@ const contractTemplate = (methodName, address, abi, args, url) => {
     const abi = '${abi}'
     const provider = new ethers.providers.JsonRpcProvider('${url}');
     const contract = new ethers.Contract('${address}', abi, provider);
-    const response = await contract.functions.${methodName}(${args});
+    const response = await contract.functions.${method}(${restArgs});
     console.log(response);
   })()
   `;
@@ -393,8 +394,7 @@ const EthersCalls = {
       return contract.functions[method](...rest);
     },
     codeSample: (url, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
-      return contractTemplate(methodName, address, abi, rest, url);
+      return contractTemplate(url, args);
     },
     args: [
       {
@@ -404,7 +404,7 @@ const EthersCalls = {
       },
       {
         type: 'textarea',
-        description: 'ABI of contract (URL or function object)',
+        description: 'Contract ABI (URL or single function object)',
         placeholder:
           'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
       },
