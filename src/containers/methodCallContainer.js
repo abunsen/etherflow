@@ -47,11 +47,12 @@ const MethodCallContainer = () => {
 
   const onUpdateContractMethod = (methodId) => {
     const newAvailableArguments = getArgumentsFromMethodId(methodId);
-    newAvailableArguments &&
-      setAvailableArgs([
+    if (newAvailableArguments)
+      return setAvailableArgs([
         ...availableArgs.slice(0, 3), // Discard method-specific arguments
         ...newAvailableArguments,
       ]);
+    setAvailableArgs([...availableArgs.slice(0, 3)]);
   };
 
   const onUpdateArguments = (val, index) => {
