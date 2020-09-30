@@ -3,7 +3,11 @@ import { NeedMethodMessage, NeedURLMessage, MethodCall } from '../components';
 import { AppContext, LogContext } from '../context';
 import Web3RpcCalls from '../helpers/web3Config';
 import buildProvider from '../helpers/buildProvider';
-import { fetchOrParseAbi, getFilteredFunctions } from '../helpers/contracts';
+import {
+  fetchOrParseAbi,
+  getFilteredMethods,
+  getArgumentsFromMethodId,
+} from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'eth_call';
@@ -31,7 +35,7 @@ const MethodCallContainer = () => {
   const [abi, setAbi] = useState(null);
 
   const updateURL = (val, index) => {
-    const argsCopy = [...argumentList];
+    const argsCopy = formArgs.split('/');
     argsCopy[index] = val;
     // bad pattern?
     let joinedArgs = argsCopy.join('/');
@@ -41,22 +45,36 @@ const MethodCallContainer = () => {
     navigate(url);
   };
 
-  const onUpdateAbi = () => {
-    const filteredFunctions = getFilteredFunctions(abi);
-    const availableArgsCopy = availableArgs;
-    availableArgsCopy[2] = {
-      ...availableArgs[2],
-      dropdownOptions: filteredFunctions,
-      disabled: abi.length === 1,
-    };
-    setAvailableArgs(availableArgsCopy);
+  const onUpdateContractMethod = (methodId) => {
+    const newAvailableArguments = getArgumentsFromMethodId(methodId);
+    newAvailableArguments &&
+      setAvailableArgs([
+        ...availableArgs.slice(0, 3), // Discard method-specific arguments
+        ...newAvailableArguments,
+      ]);
   };
 
   const onUpdateArguments = (val, index) => {
-    if (currentMethod === CONTRACT_FUNCTION_METHOD && index === 1)
-      return updateURL(btoa(val), index);
-    updateURL(val, index);
-    setArgumentList(formArgs.split('/'));
+    let valEncoded = val;
+    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
+      if (index === 1) valEncoded = btoa(val);
+      if (index === 2) onUpdateContractMethod(val);
+    }
+    updateURL(valEncoded, index);
+  };
+
+  const onUpdateAbi = () => {
+    const filteredMethods = getFilteredMethods(abi);
+    const availableArgsCopy = availableArgs;
+    availableArgsCopy[2] = {
+      ...availableArgs[2],
+      dropdownOptions: filteredMethods,
+      disabled: abi.length === 1,
+    };
+    setAvailableArgs(availableArgsCopy);
+    // If only one method, set it and disable the form
+    if (abi.length === 1 && filteredMethods[0])
+      onUpdateArguments(filteredMethods[0].value, 2);
   };
 
   const runRequest = (args) => {
@@ -80,6 +98,30 @@ const MethodCallContainer = () => {
       });
   };
 
+  const parseURL = async () => {
+    const list = formArgs.split('/');
+    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
+      // Load the ABI
+      if (list[1]) {
+        try {
+          list[1] = atob(list[1]);
+          const { error, abi } = await fetchOrParseAbi(list[1]);
+          if (error)
+            return logItem({
+              method: 'error',
+              data: ['🚨 Error:', error],
+            });
+          setAbi(abi);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      // Update selected contract method
+      if (list[2]) onUpdateArguments(list[2], 2);
+    }
+    setArgumentList(list);
+  };
+
   useEffect(() => {
     if (!abi) return;
     onUpdateAbi();
@@ -87,22 +129,7 @@ const MethodCallContainer = () => {
 
   // Parse URL arguments
   useEffect(() => {
-    const list = formArgs.split('/');
-    if (currentMethod === CONTRACT_FUNCTION_METHOD && list[1]) {
-      try {
-        list[1] = atob(list[1]);
-        const { error, abi } = fetchOrParseAbi(list[1]);
-        if (error)
-          return logItem({
-            method: 'error',
-            data: ['🚨 Error:', error],
-          });
-        setAbi(abi);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    setArgumentList(list);
+    parseURL();
   }, [formArgs]);
 
   const contextProps = {

@@ -3,34 +3,29 @@ const ERROR_MESSAGE_PARSE_ABI =
   'Error parsing ABI. Please ensure valid JSON format. Example: [{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
 const AVAILABLE_FUNCTIONS_MESSAGE = 'Available READ functions:';
 
-const getFunctionDisplayName = ({ name, inputs }) => {
+const getMethodDisplayName = ({ name, inputs }) => {
   // Convert a function entity to a human-friendly string
-  const inputTypesText = inputs.map(
-    (input, index) => `${input.type}${index < inputs.length && ','}`
-  );
-  return `${name}${
-    inputs.length > 0 ? ` (${inputs.length} inputs: ${inputTypesText})` : ''
-  }`;
+  const inputTypesText = inputs.map((input, index) => input.type);
+  return `${name}${inputs.length > 0 ? ` (${inputTypesText})` : ''}`;
 };
 
-const valFromFunction = (func) => {
-  // Convert a function entity to a URL-friendly string
-  try {
-    let functionObj = func;
-    if (typeof func !== 'object') functionObj = JSON.parse(func);
-    const inputTypes = functionObj.inputs.map(
-      (input, index) =>
-        `${input.type}${index < functionObj.inputs.length && '-'}`
-    );
-    return `${functionObj.name}${inputTypes}`;
-  } catch (e) {
-    console.log(e);
-  }
+const getMethodId = ({ name, inputs }) => {
+  // Convert a function entity to a human-friendly string
+  const inputTypesText = inputs.map((input, index) => input.type);
+  return `${name}${inputs.length > 0 ? `-${inputTypesText}` : ''}`;
 };
 
-export const functionFromVal = ({ val, abi }) => {
-  return abi[0];
-  // Convert a URL-friendly string to a function entity
+export const getArgumentsFromMethodId = (methodId) => {
+  const [name, rawArgs] = methodId.split('-');
+  if (!rawArgs) return;
+  const args = rawArgs.split(',');
+  return args.map((arg, index) => {
+    return {
+      type: 'textfield',
+      description: `Argument #${index + 1}`,
+      placeholder: arg,
+    };
+  });
 };
 
 const isValidUrl = (string) => {
@@ -42,35 +37,33 @@ const isValidUrl = (string) => {
   return true;
 };
 
-export const getFilteredFunctions = (abi) => {
+export const getFilteredMethods = (abi) => {
   try {
     return abi
-      .filter((func) => func.stateMutability === 'view')
-      .map((func) => ({
-        value: valFromFunction(func),
-        name: getFunctionDisplayName({
-          name: func.name,
-          inputs: func.inputs,
-        }),
+      .filter((method) => method.stateMutability === 'view')
+      .map((method) => ({
+        value: getMethodId(method),
+        name: getMethodDisplayName(method),
       }));
   } catch (e) {
     console.log(e);
+    return [];
   }
 };
 
-export const fetchOrParseAbi = (abiVal) => {
+export const fetchOrParseAbi = async (abiVal) => {
   if (!abiVal) return { error: ERROR_MESSAGE_NO_ABI };
   try {
     let abi = abiVal;
-    if (isValidUrl(abiVal)) abi = fetch(abiVal);
+    if (isValidUrl(abiVal)) {
+      const response = await fetch(abiVal);
+      const json = await response.json();
+      if (Array.isArray(json)) abi = json;
+      else abi = json.abi;
+    }
     if (typeof abi !== 'object') abi = JSON.parse(abiVal);
     // Handle edge case when single function entity is passed
     if (!abi.length) abi = [abi];
-
-    // console.log(
-    //   AVAILABLE_FUNCTIONS_MESSAGE,
-    //   filteredFunctions.map((func) => func.name)
-    // );
     return { abi };
   } catch (e) {
     console.log(e);
