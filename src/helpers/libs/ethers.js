@@ -388,9 +388,9 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      const [address, abi, methodName, ...rest] = args;
+      const [address, abi, method, ...rest] = args;
       const contract = new ethers.Contract(address, abi, provider);
-      return contract.functions[methodName](...rest);
+      return contract.functions[method](...rest);
     },
     codeSample: (url, ...args) => {
       const [address, abi, methodName, ...rest] = args;

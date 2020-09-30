@@ -78,12 +78,15 @@ const MethodCallContainer = () => {
       onUpdateArguments(filteredMethods[0].value, 2);
   };
 
-  const runRequest = (args) => {
+  const runRequest = () => {
     logItem({
       method: 'info',
       data: [`🚀 Sending request for **${currentMethod}**:`],
     });
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
+    const argumentListCopy = argumentList;
+    // Inject the ABI, instead of the URL
+    if (currentMethod === CONTRACT_FUNCTION_METHOD) argumentListCopy[1] = abi;
     exec(provider, proto, ...argumentList)
       .then((response) => {
         logItem({
