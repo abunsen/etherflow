@@ -422,30 +422,33 @@ const Web3JSCalls = {
   eth_call: {
     exec: (provider, proto, ...args) => {
       const [address, abi, method, ...rest] = args;
-      const contract = new provider.eth.Contract(JSON.parse(abi), address);
-      return contract.methods[method](...rest).call();
+      try {
+        const contract = new provider.eth.Contract(JSON.parse(abi), address);
+        return contract.methods[method](...rest).call();
+      } catch (e) {
+        console.log(abi);
+        console.log(e);
+      }
     },
     codeSample: (url, ...args) => {
       return contractTemplate(url, args);
     },
     args: [
-      [
-        {
-          type: 'textarea',
-          description: 'Address of contract',
-          placeholder: 'i.e. 0x91b51c173a4...',
-        },
-        {
-          type: 'textarea',
-          description: 'Contract ABI (URL or single function object)',
-          placeholder:
-            'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
-        },
-        {
-          type: 'dropdown',
-          description: 'Function name (READ only)',
-        },
-      ],
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
     ],
   },
   eth_estimateGas: {

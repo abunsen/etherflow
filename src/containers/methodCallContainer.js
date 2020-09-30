@@ -90,7 +90,7 @@ const MethodCallContainer = () => {
       const [methodName, types] = methodId.split('-');
       args = [
         address,
-        abi,
+        JSON.stringify(abi),
         methodName,
         ...parseMethodArgs(methodSpecificArgs, types.split(',')),
       ];
@@ -140,8 +140,7 @@ const MethodCallContainer = () => {
   }, [abi]);
 
   useEffect(() => {
-    if (!initialFormInputs || !initialFormInputs.length) return;
-    console.log(initialFormInputs);
+    if (!initialFormInputs) return;
     setFormInputs(initialFormInputs);
   }, [initialFormInputs]);
 
@@ -150,8 +149,6 @@ const MethodCallContainer = () => {
     parseURL();
   }, [formArgs]);
 
-  const isFormValid = argumentList[0] && argumentList[1] && argumentList[2];
-
   const contextProps = {
     codeSampleVisible,
     toggleSampleCode,
@@ -159,7 +156,7 @@ const MethodCallContainer = () => {
     web3Lib,
     web3URL,
     description,
-    disabled: disabled || !isFormValid,
+    disabled,
     args: formInputs,
     runRequest,
     onUpdateArguments,
