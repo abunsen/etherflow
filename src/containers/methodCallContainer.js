@@ -36,7 +36,7 @@ const MethodCallContainer = () => {
   const [argumentList, setArgumentList] = useState([]);
 
   const updateURL = (val, index) => {
-    const argsList = formArgs.split('/');
+    let argsList = formArgs.split('/').slice(0, formInputs.length); // Remove dangling arguments
     argsList[index] = val;
     let joinedArgs = argsList.join('/');
     let url = `/${web3URL}/${web3Lib}/`;
@@ -92,9 +92,10 @@ const MethodCallContainer = () => {
     });
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
     let args = argumentList.slice();
+    // Pre-flight conversion for contract calls
     if (currentMethod === CONTRACT_FUNCTION_METHOD)
-      // Pre-flight conversion for contract calls
       args = getContractFriendlyArguments(args, abi);
+    console.log(args);
     exec(provider, proto, ...args)
       .then((response) => {
         logItem({

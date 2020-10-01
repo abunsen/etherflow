@@ -32,9 +32,7 @@ const contractTemplate = (url, args) => {
   const abi = ${abi}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const contract = new ethers.Contract('${address}', abi, provider);
-  const response = await contract.functions.${method}(${JSON.stringify(
-    ...restArgs
-  )});
+  const response = await contract.functions.${method}(${restArgs});
   console.log(response);
 })()
   `;

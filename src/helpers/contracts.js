@@ -80,11 +80,7 @@ export const fetchOrParseAbi = async (abiVal) => {
 
 export const formatContractArgs = (args, types) => {
   if (!args || !types) return null;
-  return types.map((type, index) => {
-    if (type === 'address') return `${args[index]}`;
-    return args[index];
-    // TODO: add other types if necessary
-  });
+  return args.map((arg) => `${arg}`);
 };
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
