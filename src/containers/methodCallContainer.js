@@ -17,7 +17,9 @@ const ERROR_MESSAGE_ISSUE_DECODING = 'Error decoding the URL';
 
 const MethodCallContainer = () => {
   const params = useParams();
-  const { codeSampleVisible, toggleSampleCode } = useContext(AppContext);
+  const { codeSampleVisible, toggleSampleCode, abi, setAbi } = useContext(
+    AppContext
+  );
   const { addToLog } = useContext(LogContext);
   const logItem = useCallback(addToLog, []);
 
@@ -34,7 +36,6 @@ const MethodCallContainer = () => {
 
   const [formInputs, setFormInputs] = useState([]);
   const [argumentList, setArgumentList] = useState([]);
-  const [abi, setAbi] = useState(null);
 
   const updateURL = (val, index) => {
     const argsList = formArgs.split('/');

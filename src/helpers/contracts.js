@@ -83,10 +83,22 @@ export const formatContractArgs = (args, types) => {
 };
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
+  if (!abi) return [];
   let [address, , methodId, ...methodSpecificArgs] = argumentList;
   const [methodName, argTypes] = methodId.split('-');
-  const args = [address, JSON.stringify(abi), methodName];
-  if (argTypes)
-    args.push(...formatContractArgs(methodSpecificArgs, argTypes.split(',')));
+  const typesList = argTypes ? argTypes.split(',') : [];
+  // Pick the relevant function object
+  let abiFragment = abi;
+  if (abi.length > 1)
+    abiFragment = [
+      abi.find((element) => {
+        if (element.name !== methodName) return;
+        const inputTypes = element.inputs.map((input) => input.type);
+        if (inputTypes === typesList) return true;
+        if (!inputTypes.length && !inputTypes.length) return true;
+      }),
+    ];
+  const args = [address, JSON.stringify(abiFragment), methodName];
+  if (argTypes) args.push(...formatContractArgs(methodSpecificArgs, typesList));
   return args;
 };

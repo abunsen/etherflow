@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { CodeSample } from '../components';
 import { AppContext } from '../context';
 import { useParams } from '@reach/router';
+import { getContractFriendlyArguments } from '../helpers/contracts';
 
 const CodeSampleContainer = () => {
-  const { codeSampleVisible, toggleSampleCode } = useContext(AppContext);
+  const { codeSampleVisible, toggleSampleCode, abi } = useContext(AppContext);
   const params = useParams();
   const {
     web3URL = '',
@@ -21,7 +22,7 @@ const CodeSampleContainer = () => {
     <CodeSample
       url={atob(web3URL)}
       web3Lib={web3Lib}
-      args={argumentList}
+      args={getContractFriendlyArguments(argumentList, abi)}
       currentMethod={currentMethod}
       hideCodeSample={hideCodeSample}
       visible={codeSampleVisible}

@@ -8,12 +8,15 @@ const AppProvider = ({ children }) => {
   const toggleSampleCode = useCallback(() => {
     setCodeSampleVisible(!codeSampleVisible);
   }, [codeSampleVisible]);
+  const [abi, setAbi] = useState(null);
 
   return (
     <AppContext.Provider
       value={{
         codeSampleVisible,
         toggleSampleCode,
+        abi,
+        setAbi,
       }}
     >
       {children}
