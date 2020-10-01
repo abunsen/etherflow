@@ -426,7 +426,6 @@ const Web3JSCalls = {
         const contract = new provider.eth.Contract(JSON.parse(abi), address);
         return contract.methods[method](...rest).call();
       } catch (e) {
-        console.log(abi);
         console.log(e);
       }
     },

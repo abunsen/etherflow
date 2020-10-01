@@ -11,7 +11,7 @@ const getMethodDisplayName = ({ name, inputs }) => {
 };
 
 const getMethodId = ({ name, inputs }) => {
-  // Convert a function entity to a human-friendly string
+  // Convert a function to a unique ID
   const inputTypesText = inputs.map((input, index) => input.type);
   return `${name}${inputs.length > 0 ? `-${inputTypesText}` : ''}`;
 };
@@ -83,19 +83,21 @@ export const formatContractArgs = (args, types) => {
 };
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
-  if (!abi) return [];
   let [address, , methodId, ...methodSpecificArgs] = argumentList;
+  if (!methodId || !abi) return [];
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];
-  // Pick the relevant function object
+  // Pick the relevant function fragment
   let abiFragment = abi;
   if (abi.length > 1)
     abiFragment = [
       abi.find((element) => {
         if (element.name !== methodName) return;
         const inputTypes = element.inputs.map((input) => input.type);
-        if (inputTypes === typesList) return true;
-        if (!inputTypes.length && !inputTypes.length) return true;
+        return (
+          inputTypes.length === typesList.length &&
+          inputTypes.every((value, i) => value === typesList[i])
+        );
       }),
     ];
   const args = [address, JSON.stringify(abiFragment), methodName];
