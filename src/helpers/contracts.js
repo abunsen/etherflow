@@ -1,7 +1,6 @@
 const ERROR_MESSAGE_NO_ABI = 'No ABI provided';
 const ERROR_MESSAGE_PARSE_ABI =
   'Error parsing ABI. Please ensure valid JSON format. Example: [{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
-const AVAILABLE_FUNCTIONS_MESSAGE = 'Available READ functions:';
 const ERROR_MESSAGE_ABI_TOO_LONG = 'Please only pass one function object.';
 
 const getMethodDisplayName = ({ name, inputs }) => {
@@ -17,7 +16,7 @@ const getMethodId = ({ name, inputs }) => {
 };
 
 export const getArgumentsFromMethodId = (methodId) => {
-  const [name, rawArgs] = methodId.split('-');
+  const [, rawArgs] = methodId.split('-');
   if (!rawArgs) return;
   const args = rawArgs.split(',');
   return args.map((arg, index) => {
@@ -78,7 +77,8 @@ export const formatContractArgs = (args, types) => {
   if (!args || !types) return null;
   return types.map((type, index) => {
     if (type === 'address') return `${args[index]}`;
-    // TODO: add other types
+    return args[index];
+    // TODO: add other types if necessary
   });
 };
 
@@ -92,7 +92,7 @@ export const getContractFriendlyArguments = (argumentList, abi) => {
   if (abi.length > 1)
     abiFragment = [
       abi.find((element) => {
-        if (element.name !== methodName) return;
+        if (element.name !== methodName) return false;
         const inputTypes = element.inputs.map((input) => input.type);
         return (
           inputTypes.length === typesList.length &&

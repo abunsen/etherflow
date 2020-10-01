@@ -7,13 +7,11 @@ import {
   fetchOrParseAbi,
   getFilteredMethods,
   getArgumentsFromMethodId,
-  formatContractArgs,
   getContractFriendlyArguments,
 } from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
 const CONTRACT_FUNCTION_METHOD = 'eth_call';
-const ERROR_MESSAGE_ISSUE_DECODING = 'Error decoding the URL';
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -49,6 +47,8 @@ const MethodCallContainer = () => {
 
   const onUpdateContractMethod = (methodId) => {
     const newFormInputs = getArgumentsFromMethodId(methodId);
+    console.log('form inputs ', JSON.stringify(formInputs));
+    console.log('new ', JSON.stringify(newFormInputs));
     if (newFormInputs)
       setFormInputs([
         ...formInputs.slice(0, 3), // Discard existing method-specific inputs
@@ -60,8 +60,8 @@ const MethodCallContainer = () => {
   const onUpdateArguments = async (val, index) => {
     if (currentMethod === CONTRACT_FUNCTION_METHOD) {
       if (index === 1) {
-        // Update ABI
-        const { abi, error } = await fetchOrParseAbi(val);
+        // Prevent updating URL if ABI error
+        const { error } = await fetchOrParseAbi(val);
         if (error)
           return logItem({
             method: 'error',
@@ -140,7 +140,7 @@ const MethodCallContainer = () => {
   useEffect(() => {
     if (!abi) return;
     onUpdateAbi();
-  }, [abi]);
+  }, [abi, formInputs]);
 
   useEffect(() => {
     if (!initialFormInputs) return;
@@ -150,7 +150,7 @@ const MethodCallContainer = () => {
   // Load URL arguments
   useEffect(() => {
     loadURL();
-  }, [formArgs]);
+  }, [formArgs, currentMethod, formInputs]);
 
   const contextProps = {
     codeSampleVisible,
