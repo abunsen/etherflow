@@ -95,20 +95,19 @@ const MethodCallContainer = () => {
     // Pre-flight conversion for contract calls
     if (currentMethod === CONTRACT_FUNCTION_METHOD)
       args = getContractFriendlyArguments(args, abi);
-    console.log(args);
-    exec(provider, proto, ...args)
-      .then((response) => {
+    try {
+      exec(provider, proto, ...args).then((response) => {
         logItem({
           method: 'info',
           data: [`✅ Node response:`, response],
         });
-      })
-      .catch((err) => {
-        logItem({
-          method: 'error',
-          data: ['🚨 Error response:', err],
-        });
       });
+    } catch (err) {
+      logItem({
+        method: 'error',
+        data: ['🚨 Error response:', err],
+      });
+    }
   };
 
   const loadURL = async () => {

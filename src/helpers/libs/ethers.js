@@ -23,7 +23,7 @@ const ethersTemplate = (methodCall, varName, url) => {
 
 // TODO: Add Websocket example?
 const contractTemplate = (url, args) => {
-  const [address, abi, method, ...restArgs] = args;
+  const [address, abi, method, methodArgumentsString] = args;
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
 
@@ -32,7 +32,7 @@ const contractTemplate = (url, args) => {
   const abi = ${abi}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const contract = new ethers.Contract('${address}', abi, provider);
-  const response = await contract.functions.${method}(${restArgs});
+  const response = await contract.functions.${method}(${methodArgumentsString});
   console.log(response);
 })()
   `;

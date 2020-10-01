@@ -85,7 +85,7 @@ export const formatContractArgs = (args, types) => {
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
   let [address, , methodId, ...methodSpecificArgs] = argumentList;
-  if (!methodId || !abi) return [];
+  if (!methodId || !abi) return argumentList;
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];
   // Pick the relevant function fragment
@@ -104,4 +104,19 @@ export const getContractFriendlyArguments = (argumentList, abi) => {
   const args = [address, JSON.stringify(abiFragment), methodName];
   if (argTypes) args.push(...formatContractArgs(methodSpecificArgs, typesList));
   return args;
+};
+
+export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
+  const [
+    contract,
+    cleanAbi,
+    methodId,
+    ...methodSpecificArgs
+  ] = getContractFriendlyArguments(argumentList, abi);
+  return [
+    contract,
+    cleanAbi,
+    methodId,
+    JSON.stringify(methodSpecificArgs).replace(/^\[/, '').replace(/\]$/, ''),
+  ];
 };

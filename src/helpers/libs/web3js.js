@@ -43,7 +43,7 @@ const web3TraceTemplate = (
 
 // TODO: Add Websocket example?
 const contractTemplate = (url, args) => {
-  const [address, abi, method, ...restArgs] = args;
+  const [address, abi, method, methodArgumentsString] = args;
   return `const Web3 = require("web3");
 // OR import Web3 from 'web3';
 
@@ -52,7 +52,7 @@ const contractTemplate = (url, args) => {
   const abi = '${abi}'
   const web3 = new Web3('${url}');
   const contract = new web3.eth.Contract(abi, '${address}');
-  const response = await contract.methods.${method}(${restArgs});
+  const response = await contract.methods.${method}(${methodArgumentsString});
   console.log(response);
 })()`;
 };
