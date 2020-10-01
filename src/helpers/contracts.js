@@ -2,6 +2,8 @@ const ERROR_MESSAGE_NO_ABI = 'No ABI provided';
 const ERROR_MESSAGE_PARSE_ABI =
   'Error parsing ABI. Please ensure valid JSON format. Example: [{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
 const ERROR_MESSAGE_ABI_TOO_LONG = 'Please only pass one function object.';
+const ERROR_MESSAGE_ABI_NO_READ_FUNCTIONS =
+  'The ABI does not contain any READ functions.';
 
 const getMethodDisplayName = ({ name, inputs }) => {
   // Convert a function entity to a human-friendly string
@@ -66,6 +68,9 @@ export const fetchOrParseAbi = async (abiVal) => {
       return { error: ERROR_MESSAGE_ABI_TOO_LONG };
     // Handle edge case when single function entity is passed
     if (!abi.length) abi = [abi];
+    const filteredMethods = getFilteredMethods(abi);
+    if (filteredMethods.length === 0)
+      return { error: ERROR_MESSAGE_ABI_NO_READ_FUNCTIONS };
     return { abi };
   } catch (e) {
     console.log(e);

@@ -29,10 +29,12 @@ const contractTemplate = (url, args) => {
 
 // HTTP version
 (async () => {
-  const abi = '${abi}'
+  const abi = ${abi}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const contract = new ethers.Contract('${address}', abi, provider);
-  const response = await contract.functions.${method}(${restArgs});
+  const response = await contract.functions.${method}(${JSON.stringify(
+    ...restArgs
+  )});
   console.log(response);
 })()
   `;
