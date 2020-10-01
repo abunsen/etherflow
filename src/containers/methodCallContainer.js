@@ -143,7 +143,7 @@ const MethodCallContainer = () => {
   useEffect(() => {
     if (!argumentList) return;
     onUpdateContractMethod();
-  }, [argumentList]);
+  }, [argumentList[2]]);
 
   useEffect(() => {
     if (!initialFormInputs) return;
