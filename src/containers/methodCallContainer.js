@@ -7,7 +7,8 @@ import {
   fetchOrParseAbi,
   getFilteredMethods,
   getArgumentsFromMethodId,
-  parseMethodArgs,
+  formatContractArgs,
+  getContractFriendlyArguments,
 } from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
@@ -48,20 +49,28 @@ const MethodCallContainer = () => {
   const onUpdateContractMethod = (methodId) => {
     const newFormInputs = getArgumentsFromMethodId(methodId);
     if (newFormInputs)
-      return setFormInputs([
+      setFormInputs([
         ...formInputs.slice(0, 3), // Discard existing method-specific inputs
         ...newFormInputs,
       ]);
-    setFormInputs([...formInputs.slice(0, 3)]);
+    else setFormInputs([...formInputs.slice(0, 3)]);
   };
 
-  const onUpdateArguments = (val, index) => {
-    let valEncoded = val;
+  const onUpdateArguments = async (val, index) => {
     if (currentMethod === CONTRACT_FUNCTION_METHOD) {
-      if (index === 1) valEncoded = btoa(val);
+      if (index === 1) {
+        // Update ABI
+        const { abi, error } = await fetchOrParseAbi(val);
+        if (error)
+          return logItem({
+            method: 'error',
+            data: ['🚨 Error:', error],
+          });
+        return updateURL(btoa(val), index);
+      }
       if (index === 2) onUpdateContractMethod(val);
     }
-    updateURL(valEncoded, index);
+    updateURL(val, index);
   };
 
   const onUpdateAbi = () => {
@@ -73,9 +82,10 @@ const MethodCallContainer = () => {
       disabled: abi.length === 1,
     };
     setFormInputs(formInputsCopy);
-    // If only one method, set it and disable the form
-    if (abi.length === 1 && filteredMethods[0])
-      onUpdateArguments(filteredMethods[0].value, 2);
+    if (abi.length === 1) {
+      onUpdateContractMethod(filteredMethods[0].value);
+      updateURL(filteredMethods[0].value, 2);
+    }
   };
 
   const runRequest = () => {
@@ -85,16 +95,9 @@ const MethodCallContainer = () => {
     });
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
     let args = argumentList.slice();
-    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
-      const [address, , methodId, ...methodSpecificArgs] = argumentList;
-      const [methodName, types] = methodId.split('-');
-      args = [
-        address,
-        JSON.stringify(abi),
-        methodName,
-        ...parseMethodArgs(methodSpecificArgs, types.split(',')),
-      ];
-    }
+    if (currentMethod === CONTRACT_FUNCTION_METHOD)
+      // Pre-flight conversion for contract calls
+      args = getContractFriendlyArguments(args, abi);
     exec(provider, proto, ...args)
       .then((response) => {
         logItem({
@@ -110,11 +113,11 @@ const MethodCallContainer = () => {
       });
   };
 
-  const parseURL = async () => {
+  const loadURL = async () => {
     const list = formArgs.split('/');
     if (currentMethod === CONTRACT_FUNCTION_METHOD) {
-      // Load the ABI
       if (list[1]) {
+        // Load ABI
         try {
           list[1] = atob(list[1]);
           const { error, abi } = await fetchOrParseAbi(list[1]);
@@ -128,8 +131,7 @@ const MethodCallContainer = () => {
           console.log(e);
         }
       }
-      // Update selected contract method
-      if (list[2]) onUpdateArguments(list[2], 2);
+      if (list[2]) onUpdateContractMethod(list[2]);
     }
     setArgumentList(list);
   };
@@ -144,9 +146,9 @@ const MethodCallContainer = () => {
     setFormInputs(initialFormInputs);
   }, [initialFormInputs]);
 
-  // Parse URL arguments
+  // Load URL arguments
   useEffect(() => {
-    parseURL();
+    loadURL();
   }, [formArgs]);
 
   const contextProps = {

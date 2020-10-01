@@ -74,9 +74,19 @@ export const fetchOrParseAbi = async (abiVal) => {
   }
 };
 
-export const parseMethodArgs = (args, types) => {
+export const formatContractArgs = (args, types) => {
   if (!args || !types) return null;
   return types.map((type, index) => {
     if (type === 'address') return `${args[index]}`;
+    // TODO: add other types
   });
+};
+
+export const getContractFriendlyArguments = (argumentList, abi) => {
+  let [address, , methodId, ...methodSpecificArgs] = argumentList;
+  const [methodName, argTypes] = methodId.split('-');
+  const args = [address, JSON.stringify(abi), methodName];
+  if (argTypes)
+    args.push(...formatContractArgs(methodSpecificArgs, argTypes.split(',')));
+  return args;
 };
