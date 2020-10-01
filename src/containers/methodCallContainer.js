@@ -45,10 +45,10 @@ const MethodCallContainer = () => {
     navigate(url);
   };
 
-  const onUpdateContractMethod = (methodId) => {
+  const onUpdateContractMethod = () => {
+    const methodId = argumentList[2];
+    if (!methodId) return;
     const newFormInputs = getArgumentsFromMethodId(methodId);
-    console.log('form inputs ', JSON.stringify(formInputs));
-    console.log('new ', JSON.stringify(newFormInputs));
     if (newFormInputs)
       setFormInputs([
         ...formInputs.slice(0, 3), // Discard existing method-specific inputs
@@ -69,7 +69,6 @@ const MethodCallContainer = () => {
           });
         return updateURL(btoa(val), index);
       }
-      if (index === 2) onUpdateContractMethod(val);
     }
     updateURL(val, index);
   };
@@ -83,10 +82,7 @@ const MethodCallContainer = () => {
       disabled: abi.length === 1,
     };
     setFormInputs(formInputsCopy);
-    if (abi.length === 1) {
-      onUpdateContractMethod(filteredMethods[0].value);
-      updateURL(filteredMethods[0].value, 2);
-    }
+    if (abi.length === 1) updateURL(filteredMethods[0].value, 2);
   };
 
   const runRequest = () => {
@@ -116,26 +112,28 @@ const MethodCallContainer = () => {
 
   const loadURL = async () => {
     const list = formArgs.split('/');
-    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
-      if (list[1]) {
-        // Load ABI
-        try {
-          list[1] = atob(list[1]);
-          const { error, abi } = await fetchOrParseAbi(list[1]);
-          if (error)
-            return logItem({
-              method: 'error',
-              data: ['🚨 Error:', error],
-            });
-          setAbi(abi);
-        } catch (e) {
-          console.log(e);
-        }
+    if (currentMethod === CONTRACT_FUNCTION_METHOD && list[1]) {
+      // Load ABI
+      try {
+        list[1] = atob(list[1]);
+        const { error, abi } = await fetchOrParseAbi(list[1]);
+        if (error)
+          return logItem({
+            method: 'error',
+            data: ['🚨 Error:', error],
+          });
+        setAbi(abi);
+      } catch (e) {
+        console.log(e);
       }
-      if (list[2]) onUpdateContractMethod(list[2]);
     }
     setArgumentList(list);
   };
+
+  // Load URL arguments
+  useEffect(() => {
+    loadURL();
+  }, [formArgs, currentMethod, formInputs]);
 
   useEffect(() => {
     if (!abi) return;
@@ -143,14 +141,14 @@ const MethodCallContainer = () => {
   }, [abi, formInputs]);
 
   useEffect(() => {
+    if (!argumentList) return;
+    onUpdateContractMethod();
+  }, [argumentList]);
+
+  useEffect(() => {
     if (!initialFormInputs) return;
     setFormInputs(initialFormInputs);
   }, [initialFormInputs]);
-
-  // Load URL arguments
-  useEffect(() => {
-    loadURL();
-  }, [formArgs, currentMethod, formInputs]);
 
   const contextProps = {
     codeSampleVisible,
