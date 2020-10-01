@@ -139,7 +139,7 @@ const Web3RpcCalls = {
     ethers: calls.ethers.default.eth_sendRawTransaction,
   },
   eth_call: {
-    description: 'Calls a specific READ function on a contract',
+    description: 'Call any read-only function on a deployed contract',
     web3: calls.web3.default.eth_call,
     ethers: calls.ethers.default.eth_call,
   },

@@ -120,3 +120,27 @@ export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
     JSON.stringify(methodSpecificArgs).replace(/^\[/, '').replace(/\]$/, ''),
   ];
 };
+
+export const getFormInputsFromMethod = (methodId, formInputs) => {
+  if (!methodId) return;
+  const newFormInputs = getArgumentsFromMethodId(methodId);
+  if (newFormInputs)
+    return [
+      ...formInputs.slice(0, 3), // Discard existing method-specific inputs
+      ...newFormInputs,
+    ];
+  else return [...formInputs.slice(0, 3)];
+};
+
+export const onUpdateAbi = (abi, formInputs) => {
+  const filteredMethods = getFilteredMethods(abi);
+  const formInputsCopy = formInputs;
+  formInputsCopy[2] = {
+    ...formInputs[2],
+    dropdownOptions: filteredMethods,
+    disabled: abi.length === 1,
+  };
+  let newUrl = null;
+  if (abi.length === 1) newUrl = filteredMethods[0].value;
+  return { newFormInputs: formInputsCopy, newUrl };
+};

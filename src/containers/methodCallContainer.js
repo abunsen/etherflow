@@ -6,8 +6,9 @@ import buildProvider from '../helpers/buildProvider';
 import {
   fetchOrParseAbi,
   getFilteredMethods,
-  getArgumentsFromMethodId,
   getContractFriendlyArguments,
+  getFormInputsFromMethod,
+  onUpdateAbi,
 } from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
@@ -45,18 +46,6 @@ const MethodCallContainer = () => {
     navigate(url);
   };
 
-  const onUpdateContractMethod = () => {
-    const methodId = argumentList[2];
-    if (!methodId) return;
-    const newFormInputs = getArgumentsFromMethodId(methodId);
-    if (newFormInputs)
-      setFormInputs([
-        ...formInputs.slice(0, 3), // Discard existing method-specific inputs
-        ...newFormInputs,
-      ]);
-    else setFormInputs([...formInputs.slice(0, 3)]);
-  };
-
   const onUpdateArguments = async (val, index) => {
     if (currentMethod === CONTRACT_FUNCTION_METHOD) {
       if (index === 1) {
@@ -71,18 +60,6 @@ const MethodCallContainer = () => {
       }
     }
     updateURL(val, index);
-  };
-
-  const onUpdateAbi = () => {
-    const filteredMethods = getFilteredMethods(abi);
-    const formInputsCopy = formInputs;
-    formInputsCopy[2] = {
-      ...formInputs[2],
-      dropdownOptions: filteredMethods,
-      disabled: abi.length === 1,
-    };
-    setFormInputs(formInputsCopy);
-    if (abi.length === 1) updateURL(filteredMethods[0].value, 2);
   };
 
   const runRequest = () => {
@@ -137,12 +114,14 @@ const MethodCallContainer = () => {
 
   useEffect(() => {
     if (!abi) return;
-    onUpdateAbi();
+    const { newFormInputs, newUrl } = onUpdateAbi(abi, formInputs);
+    setFormInputs(newFormInputs);
+    if (newUrl) updateURL(newUrl, 2);
   }, [abi, formInputs]);
 
   useEffect(() => {
     if (!argumentList) return;
-    onUpdateContractMethod();
+    setFormInputs(getFormInputsFromMethod(argumentList[2], formInputs));
   }, [argumentList[2]]);
 
   useEffect(() => {
