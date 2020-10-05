@@ -53,10 +53,7 @@ export const getArgumentsFromMethodId = (abi, methodId) => {
       .replace(/\[\]/, '');
     let placeholder = PLACEHOLDER_BASE_TYPE[baseType];
     const isArray = /\[\]/.test(arg);
-    if (isArray) {
-      if (/(string|address)/.test(arg)) placeholder = `"${placeholder}"`;
-      placeholder = `${placeholder}, ${placeholder}`;
-    }
+    if (isArray) placeholder = `${placeholder}, ${placeholder}`;
     return {
       type: isArray ? 'textarea' : 'textfield',
       description: abiFragment.inputs[index].name || arg,
@@ -121,17 +118,10 @@ export const fetchOrParseAbi = async (abiVal) => {
 export const formatContractArgs = (args, types) => {
   if (!args || !types) return null;
   return args.map((arg) => {
-    if (/".*,.*"/.test(arg)) {
+    if (/,/.test(arg)) {
       // Array value
-      try {
-        let formattedArg = arg;
-        if (!/^\[/.test(arg)) formattedArg = `[${arg}]`;
-        let argObj = JSON.parse(formattedArg);
-        if (!argObj.length) argObj = [argObj];
-        return argObj;
-      } catch (e) {
-        return null;
-      }
+
+      return arg.split(',');
     }
     return `${arg}`;
   });
