@@ -17,16 +17,44 @@ const getMethodId = ({ name, inputs }) => {
   return `${name}${inputs.length > 0 ? `-${inputTypesText}` : ''}`;
 };
 
-export const getArgumentsFromMethodId = (methodId) => {
+const getFragmentFromMethodId = (abi, methodId) => {
+  const [methodName, argTypes] = methodId.split('-');
+  const typesList = argTypes ? argTypes.split(',') : [];
+  if (abi.length === 1) return abi[0];
+  return abi.find((element) => {
+    if (element.name !== methodName) return false;
+    const inputTypes = element.inputs.map((input) => input.type);
+    return (
+      inputTypes.length === typesList.length &&
+      inputTypes.every((value, i) => value === typesList[i])
+    );
+  });
+};
+
+const PLACEHOLDER_BASE_TYPE = {
+  int: '255',
+  bool: 'true',
+  address: '0x261b45d85ccfeabb11f022eba346ee8d1cd488c0',
+  string: 'example text',
+};
+export const getArgumentsFromMethodId = (abi, methodId) => {
   /* eslint-disable-next-line no-unused-vars*/
   const [_, rawArgs] = methodId.split('-');
   if (!rawArgs) return;
   const args = rawArgs.split(',');
+  const abiFragment = getFragmentFromMethodId(abi, methodId);
   return args.map((arg, index) => {
+    const baseType = arg.replace(/(uint|int)[0-9]+/, 'int').replace(/\[\]/, '');
+    let placeholder = PLACEHOLDER_BASE_TYPE[baseType];
+    const isArray = /\[\]/.test(arg);
+    if (isArray) {
+      if (/(string|address)/.test(arg)) placeholder = `"${placeholder}"`;
+      placeholder = `[${placeholder}, ${placeholder}]`;
+    }
     return {
-      type: 'textfield',
-      description: `Argument #${index + 1}`,
-      placeholder: arg,
+      type: isArray ? 'textarea' : 'textfield',
+      description: abiFragment.inputs[index].name || arg,
+      placeholder: `i.e. ${placeholder}`,
     };
   });
 };
@@ -90,19 +118,8 @@ export const getContractFriendlyArguments = (argumentList, abi) => {
   if (!methodId || !abi) return argumentList;
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];
-  // Pick the relevant function fragment
-  let abiFragment = abi;
-  if (abi.length > 1)
-    abiFragment = [
-      abi.find((element) => {
-        if (element.name !== methodName) return false;
-        const inputTypes = element.inputs.map((input) => input.type);
-        return (
-          inputTypes.length === typesList.length &&
-          inputTypes.every((value, i) => value === typesList[i])
-        );
-      }),
-    ];
+  // Pick out the relevant function fragment
+  const abiFragment = [getFragmentFromMethodId(abi, methodId)];
   const args = [address, JSON.stringify(abiFragment), methodName];
   if (argTypes) args.push(...formatContractArgs(methodSpecificArgs, typesList));
   return args;
@@ -123,9 +140,9 @@ export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
   ];
 };
 
-export const getFormInputsFromMethod = (methodId, formInputs) => {
+export const getFormInputsFromMethod = (abi, methodId, formInputs) => {
   if (!methodId) return;
-  const newFormInputs = getArgumentsFromMethodId(methodId);
+  const newFormInputs = getArgumentsFromMethodId(abi, methodId);
   if (newFormInputs)
     return [
       ...formInputs.slice(0, 3), // Discard existing method-specific inputs

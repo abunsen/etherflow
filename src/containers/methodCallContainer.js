@@ -119,7 +119,7 @@ const MethodCallContainer = () => {
 
   useEffect(() => {
     if (!argumentList) return;
-    setFormInputs(getFormInputsFromMethod(argumentList[2], formInputs));
+    setFormInputs(getFormInputsFromMethod(abi, argumentList[2], formInputs));
   }, [argumentList[2]]);
 
   useEffect(() => {
