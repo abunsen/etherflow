@@ -4,6 +4,7 @@ const ERROR_MESSAGE_PARSE_ABI =
 const ERROR_MESSAGE_ABI_TOO_LONG = 'Please only pass one function object.';
 const ERROR_MESSAGE_ABI_NO_READ_FUNCTIONS =
   'The ABI does not contain any READ functions.';
+const ERROR_MESSAGE_FETCH = 'Error fetching ABI. CORS header may not be set.';
 
 const getMethodDisplayName = ({ name, inputs }) => {
   // Convert a function entity to a human-friendly string
@@ -92,7 +93,12 @@ export const fetchOrParseAbi = async (abiVal) => {
   try {
     let abi = abiVal;
     if (isValidUrl(abiVal)) {
-      const response = await fetch(abiVal);
+      let response = null;
+      try {
+        response = await fetch(abiVal);
+      } catch (e) {
+        return { error: ERROR_MESSAGE_FETCH };
+      }
       const json = await response.json();
       if (Array.isArray(json)) abi = json;
       else abi = json.abi;
