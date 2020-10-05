@@ -36,7 +36,9 @@ const PLACEHOLDER_BASE_TYPE = {
   bool: 'true',
   address: '0x261b45d85ccfeabb11f022eba346ee8d1cd488c0',
   string: 'example text',
+  byte: '01',
 };
+
 export const getArgumentsFromMethodId = (abi, methodId) => {
   /* eslint-disable-next-line no-unused-vars*/
   const [_, rawArgs] = methodId.split('-');
@@ -44,12 +46,15 @@ export const getArgumentsFromMethodId = (abi, methodId) => {
   const args = rawArgs.split(',');
   const abiFragment = getFragmentFromMethodId(abi, methodId);
   return args.map((arg, index) => {
-    const baseType = arg.replace(/(uint|int)[0-9]+/, 'int').replace(/\[\]/, '');
+    const baseType = arg
+      .replace(/(uint|int)[0-9]*/, 'int')
+      .replace(/(byte|bytes)[0-9]*/, 'byte')
+      .replace(/\[\]/, '');
     let placeholder = PLACEHOLDER_BASE_TYPE[baseType];
     const isArray = /\[\]/.test(arg);
     if (isArray) {
       if (/(string|address)/.test(arg)) placeholder = `"${placeholder}"`;
-      placeholder = `[${placeholder}, ${placeholder}]`;
+      placeholder = `${placeholder}, ${placeholder}`;
     }
     return {
       type: isArray ? 'textarea' : 'textfield',
@@ -109,7 +114,21 @@ export const fetchOrParseAbi = async (abiVal) => {
 
 export const formatContractArgs = (args, types) => {
   if (!args || !types) return null;
-  return args.map((arg) => `${arg}`);
+  return args.map((arg) => {
+    if (/".*,.*"/.test(arg)) {
+      // Array value
+      try {
+        let formattedArg = arg;
+        if (!/^\[/.test(arg)) formattedArg = `[${arg}]`;
+        let argObj = JSON.parse(formattedArg);
+        if (!argObj.length) argObj = [argObj];
+        return argObj;
+      } catch (e) {
+        return null;
+      }
+    }
+    return `${arg}`;
+  });
 };
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
