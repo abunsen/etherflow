@@ -18,7 +18,8 @@ const getMethodId = ({ name, inputs }) => {
 };
 
 export const getArgumentsFromMethodId = (methodId) => {
-  const [, rawArgs] = methodId.split('-');
+  /* eslint-disable-next-line no-unused-vars*/
+  const [_, rawArgs] = methodId.split('-');
   if (!rawArgs) return;
   const args = rawArgs.split(',');
   return args.map((arg, index) => {
@@ -84,7 +85,8 @@ export const formatContractArgs = (args, types) => {
 };
 
 export const getContractFriendlyArguments = (argumentList, abi) => {
-  let [address, , methodId, ...methodSpecificArgs] = argumentList;
+  /* eslint-disable-next-line no-unused-vars*/
+  let [address, _, methodId, ...methodSpecificArgs] = argumentList;
   if (!methodId || !abi) return argumentList;
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];

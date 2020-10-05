@@ -49,7 +49,7 @@ const contractTemplate = (url, args) => {
 
 // HTTP version
 (async () => {
-  const abi = '${abi}'
+  const abi = ${abi}
   const web3 = new Web3('${url}');
   const contract = new web3.eth.Contract(abi, '${address}');
   const response = await contract.methods.${method}(${methodArgumentsString});

@@ -47,17 +47,15 @@ const MethodCallContainer = () => {
   };
 
   const onUpdateArguments = async (val, index) => {
-    if (currentMethod === CONTRACT_FUNCTION_METHOD) {
-      if (index === 1) {
-        // Prevent updating URL if ABI error
-        const { error } = await fetchOrParseAbi(val);
-        if (error)
-          return logItem({
-            method: 'error',
-            data: ['🚨 Error:', error],
-          });
-        return updateURL(btoa(val), index);
-      }
+    if (currentMethod === CONTRACT_FUNCTION_METHOD && index === 1) {
+      // Prevent updating URL if ABI error
+      const { error } = await fetchOrParseAbi(val);
+      if (error)
+        return logItem({
+          method: 'error',
+          data: ['🚨 Error:', error],
+        });
+      return updateURL(btoa(val), index);
     }
     updateURL(val, index);
   };
@@ -72,19 +70,19 @@ const MethodCallContainer = () => {
     // Pre-flight conversion for contract calls
     if (currentMethod === CONTRACT_FUNCTION_METHOD)
       args = getContractFriendlyArguments(args, abi);
-    try {
-      exec(provider, proto, ...args).then((response) => {
+    exec(provider, proto, ...args)
+      .then((response) => {
         logItem({
           method: 'info',
           data: [`✅ Node response:`, response],
         });
+      })
+      .catch((err) => {
+        logItem({
+          method: 'error',
+          data: ['🚨 Error response:', err],
+        });
       });
-    } catch (err) {
-      logItem({
-        method: 'error',
-        data: ['🚨 Error response:', err],
-      });
-    }
   };
 
   const loadURL = async () => {
