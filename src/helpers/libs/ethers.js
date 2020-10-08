@@ -1,3 +1,5 @@
+import ethers from 'ethers';
+
 const ethersTemplate = (methodCall, varName, url) => {
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
@@ -17,6 +19,23 @@ const ethersTemplate = (methodCall, varName, url) => {
   console.log(${varName});
 })()
 `;
+};
+
+// TODO: Add Websocket example?
+const contractTemplate = (url, args) => {
+  const [address, abi, method, methodArgumentsString] = args;
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = ${abi}
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const contract = new ethers.Contract('${address}', abi, provider);
+  const response = await contract.functions.${method}(${methodArgumentsString});
+  console.log(response);
+})()
+  `;
 };
 
 const EthersCalls = {
@@ -371,14 +390,30 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      const [address, abi, method, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[method](...rest);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      return contractTemplate(url, args);
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {

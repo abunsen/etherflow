@@ -41,6 +41,22 @@ const web3TraceTemplate = (
 `;
 };
 
+// TODO: Add Websocket example?
+const contractTemplate = (url, args) => {
+  const [address, abi, method, methodArgumentsString] = args;
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const abi = ${abi}
+  const web3 = new Web3('${url}');
+  const contract = new web3.eth.Contract(abi, '${address}');
+  const response = await contract.methods.${method}(${methodArgumentsString});
+  console.log(response);
+})()`;
+};
+
 const Web3JSCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -405,14 +421,34 @@ const Web3JSCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      const [address, abi, method, ...rest] = args;
+      try {
+        const contract = new provider.eth.Contract(JSON.parse(abi), address);
+        return contract.methods[method](...rest).call();
+      } catch (e) {
+        console.log(e);
+      }
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      return contractTemplate(url, args);
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {

@@ -48,15 +48,47 @@ const BooleanSelect = ({ initialVal, updateValue }) => {
   );
 };
 
-const Field = ({ description, placeholder, type, val, updateValue }) => {
+const Dropdown = ({ dropdownOptions = [], updateValue, disabled, val }) => {
+  return (
+    <select
+      value={val ? val : ''}
+      className="my-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+      onChange={(e) => updateValue(e.target.value)}
+      disabled={disabled}
+    >
+      {dropdownOptions.length !== 1 && (
+        <option disabled value="">
+          {' '}
+          -- select an option --{' '}
+        </option>
+      )}
+      {dropdownOptions.map((option, index) => (
+        <option key={`${index}-${option.name}`} value={option.value}>
+          {option.name}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+const Field = ({
+  description,
+  placeholder,
+  type,
+  val,
+  updateValue,
+  dropdownOptions,
+  disabled,
+}) => {
   let actualField;
   switch (type) {
-    case 'textarea':
+    case 'dropdown':
       actualField = (
-        <Textarea
+        <Dropdown
           updateValue={updateValue}
-          placeholder={placeholder}
-          initialVal={val}
+          dropdownOptions={dropdownOptions}
+          disabled={disabled}
+          val={val}
         />
       );
       break;
@@ -109,7 +141,7 @@ const MethodCall = ({
   args,
   runRequest,
   argumentList,
-  setArgumentList,
+  onUpdateArguments,
 }) => {
   return (
     <div className="w-3/12 py-2 px-4 border-r border-gray-200 shadow-md h-screen overflow-x-scroll">
@@ -130,7 +162,7 @@ const MethodCall = ({
           key={i}
           val={argumentList[i]}
           updateValue={(val) => {
-            setArgumentList(val, i);
+            onUpdateArguments(val, i);
           }}
         />
       ))}
