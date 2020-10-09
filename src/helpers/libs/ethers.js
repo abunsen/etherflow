@@ -38,8 +38,18 @@ const contractTemplate = (url, args) => {
   `;
 };
 
+// TODO: fix string/number types for block & trasceType
 const contractTraceTemplate = (url, args) => {
-  const [address, abi, method, methodArgumentsString] = args;
+  const [
+    traceType,
+    block,
+    from,
+    value,
+    contract,
+    abi,
+    method,
+    methodArgumentsString,
+  ] = args;
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
 
@@ -47,8 +57,16 @@ const contractTraceTemplate = (url, args) => {
 (async () => {
   const abi = ${abi}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const contract = new ethers.Contract('${address}', abi, provider);
-  const response = await contract.functions.${method}(${methodArgumentsString});
+  const iface = new ethers.utils.Interface(abi);
+  const data = iface.encodeFunctionData("${method}"${
+    methodArgumentsString ? ` , [${methodArgumentsString}]` : ''
+  }); ${from ? `\nconst from = ${from};` : ''}
+  const to = "${contract}"; ${value ? `\nconst value = ${value};` : ''}
+  const transaction = { ${from ? `\nfrom,` : ''}
+    to,
+    data,
+  };
+  const response = await provider.send('trace_call', [transaction, [${traceType}], ${block}]);
   console.log(response);
 })()
   `;
@@ -1090,7 +1108,7 @@ const filter = {
     },
     codeSample: (url, ...args) => {
       // TODO: change template
-      return contractTemplate(url, args);
+      return contractTraceTemplate(url, args);
     },
     args: [
       {
