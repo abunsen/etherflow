@@ -1048,6 +1048,42 @@ const filter = {
       },
     ],
   },
+  trace_call: {
+    exec: (provider, proto, ...args) => {
+      const [address, abi, method, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[method](...rest);
+      // TODO: encode data and parse agruments properly
+      const data = 'no data';
+      const array = 'trace';
+      const quantity = null;
+      // return provider.send('trace_call', data, array, quantity);
+      return () => console.log('trace_call:', data);
+    },
+    codeSample: (url, ...args) => {
+      // TODO: change template
+      return contractTemplate(url, args);
+    },
+    args: [
+      // TODO: add inputs for Array - Type of trace, one or more of: "vmTrace", "trace", "stateDiff".
+      // Quantity or Tag - (optional) Integer of a block number, or the string 'earliest', 'latest' or 'pending'.
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
+  },
 };
 
 export default EthersCalls;

@@ -12,7 +12,8 @@ import {
 } from '../helpers/contracts';
 import { navigate, useParams } from '@reach/router';
 
-const CONTRACT_FUNCTION_METHOD = 'eth_call';
+const ETH_CALL = 'eth_call';
+const TRACE_CALL = 'trace_call';
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -36,6 +37,9 @@ const MethodCallContainer = () => {
   const [formInputs, setFormInputs] = useState([]);
   const [argumentList, setArgumentList] = useState([]);
 
+  const isContractMethod =
+    currentMethod === ETH_CALL || currentMethod === TRACE_CALL;
+
   const updateURL = (val, index) => {
     let argsList = formArgs.split('/').slice(0, formInputs.length); // Remove dangling arguments
     argsList[index] = val;
@@ -47,7 +51,7 @@ const MethodCallContainer = () => {
   };
 
   const onUpdateArguments = async (val, index) => {
-    if (currentMethod === CONTRACT_FUNCTION_METHOD && index === 1) {
+    if (isContractMethod && index === 1) {
       // Prevent updating URL if ABI error
       const { error } = await fetchOrParseAbi(val);
       if (error)
@@ -68,8 +72,7 @@ const MethodCallContainer = () => {
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
     let args = argumentList.slice();
     // Pre-flight conversion for contract calls
-    if (currentMethod === CONTRACT_FUNCTION_METHOD)
-      args = getContractFriendlyArguments(args, abi);
+    if (isContractMethod) args = getContractFriendlyArguments(args, abi);
     exec(provider, proto, ...args)
       .then((response) => {
         logItem({
@@ -87,7 +90,7 @@ const MethodCallContainer = () => {
 
   const loadURL = async () => {
     const list = formArgs.split('/');
-    if (currentMethod === CONTRACT_FUNCTION_METHOD && list[1]) {
+    if (isContractMethod && list[1]) {
       // Load ABI
       try {
         list[1] = atob(list[1]);
