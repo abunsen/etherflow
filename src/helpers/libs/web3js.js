@@ -67,14 +67,16 @@ const contractTraceTemplate = (url, args) => {
     method,
     methodArgumentsString,
   ] = args;
-  return `const ethers = require("ethers");
-// OR import ethers from 'ethers';
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
 
 // HTTP version
 (async () => {
   const abi = ${abi}
   const web3 = new Web3('${url}');
-  const data = provider.eth.abi.encodeFunctionSignature(${method}(${methodArgumentsString}));
+  const data = web3.eth.abi.encodeFunctionSignature("${method}(${methodArgumentsString})"); ${
+    from ? `\n  const from = "${from}";` : ''
+  }
   const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
   const transaction = { ${from ? `\n    from,` : ''}
     to,${value ? `\n    value,` : ''}
@@ -90,9 +92,9 @@ const contractTraceTemplate = (url, args) => {
       },
     ],
   });
-  const response = await web3.parityTraceCall(data, ${traceTypeList}, ${block});
+  const response = await web3.parityTraceCall(transaction, ${traceTypeList}, ${block});
   console.log(response);
-  `;
+})()`;
 };
 
 const Web3JSCalls = {
@@ -1165,6 +1167,7 @@ const Web3JSCalls = {
           },
         ],
       });
+      console.log(transaction);
       return provider.parityTraceCall(
         transaction,
         traceType.split(', '),
