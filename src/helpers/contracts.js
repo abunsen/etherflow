@@ -71,10 +71,10 @@ const isValidUrl = (string) => {
   return true;
 };
 
-export const getFilteredMethods = (abi) => {
+export const getFilteredMethods = (abi, isWriteAllowed) => {
   try {
     return abi
-      .filter((method) => method.stateMutability === 'view')
+      .filter((method) => isWriteAllowed || method.stateMutability === 'view')
       .map((method) => ({
         value: getMethodId(method),
         name: getMethodDisplayName(method),
@@ -85,7 +85,7 @@ export const getFilteredMethods = (abi) => {
   }
 };
 
-export const fetchOrParseAbi = async (abiVal) => {
+export const fetchOrParseAbi = async (abiVal, isWriteAllowed) => {
   if (!abiVal) return { error: ERROR_MESSAGE_NO_ABI };
   try {
     let abi = abiVal;
@@ -105,7 +105,7 @@ export const fetchOrParseAbi = async (abiVal) => {
       return { error: ERROR_MESSAGE_ABI_TOO_LONG };
     // Handle edge case when single function entity is passed
     if (!abi.length) abi = [abi];
-    const filteredMethods = getFilteredMethods(abi);
+    const filteredMethods = getFilteredMethods(abi, isWriteAllowed);
     if (filteredMethods.length === 0)
       return { error: ERROR_MESSAGE_ABI_NO_READ_FUNCTIONS };
     return { abi };
@@ -155,9 +155,15 @@ export const getCodeSampleFriendlyArguments = (
     methodId,
     ...methodSpecificArgs
   ] = getContractFriendlyArguments(list, abi);
+  let abiObj = cleanAbi;
+  try {
+    abiObj = JSON.parse(cleanAbi);
+  } catch (e) {
+    // do nothing
+  }
   let codeFriendlyArguments = [
     contract,
-    cleanAbi,
+    abiObj,
     methodId,
     JSON.stringify(methodSpecificArgs).replace(/^\[/, '').replace(/\]$/, ''),
   ];
@@ -182,7 +188,8 @@ export const getFormInputsFromMethod = (
 };
 
 export const onUpdateAbi = (abi, formInputs, argOffset) => {
-  const filteredMethods = getFilteredMethods(abi);
+  const isWriteAllowed = argOffset > 0;
+  const filteredMethods = getFilteredMethods(abi, isWriteAllowed);
   const formInputsCopy = formInputs;
   formInputsCopy[2 + argOffset] = {
     ...formInputs[2 + argOffset],
