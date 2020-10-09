@@ -29,7 +29,7 @@ const contractTemplate = (url, args) => {
 
 // HTTP version
 (async () => {
-  const abi = ${abi}
+  const abi = ${abi && JSON.stringify(abi)}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const contract = new ethers.Contract('${address}', abi, provider);
   const response = await contract.functions.${method}(${methodArgumentsString});
@@ -54,7 +54,7 @@ const contractTraceTemplate = (url, args) => {
 
 // HTTP version
 (async () => {
-  const abi = ${abi}
+  const abi = ${abi && JSON.stringify(abi)}
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const iface = new ethers.utils.Interface(abi);
   const data = iface.encodeFunctionData("${method}"${
