@@ -142,19 +142,27 @@ export const getContractFriendlyArguments = (argumentList, abi, argOffset) => {
   return traceArgs.concat(args); // add back trace arguments
 };
 
-export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
+export const getCodeSampleFriendlyArguments = (
+  argumentList,
+  abi,
+  argOffset
+) => {
+  let list = argumentList;
+  const traceArgs = list.splice(0, argOffset); // remove trace arguments (if any)
   const [
     contract,
     cleanAbi,
     methodId,
     ...methodSpecificArgs
-  ] = getContractFriendlyArguments(argumentList, abi);
-  return [
+  ] = getContractFriendlyArguments(list, abi);
+  let codeFriendlyArguments = [
     contract,
     cleanAbi,
     methodId,
     JSON.stringify(methodSpecificArgs).replace(/^\[/, '').replace(/\]$/, ''),
   ];
+  if (traceArgs) codeFriendlyArguments.splice(0, 0, ...traceArgs);
+  return codeFriendlyArguments;
 };
 
 export const getFormInputsFromMethod = (

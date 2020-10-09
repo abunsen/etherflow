@@ -41,7 +41,7 @@ const MethodCallContainer = () => {
   // Logic when using contract method (eth_call, trace_call)
   const isContractMethod =
     currentMethod === ETH_CALL || currentMethod === TRACE_CALL;
-  const argOffset = currentMethod === TRACE_CALL ? 2 : 0;
+  const argOffset = currentMethod === TRACE_CALL ? TRACE_ARGS_OFFSET : 0;
 
   const updateURL = (val, index) => {
     let argsList = formArgs.split('/').slice(0, formInputs.length); // Remove dangling arguments
