@@ -74,8 +74,7 @@ const contractTraceTemplate = (url, args) => {
 (async () => {
   const abiFragment = ${abi && JSON.stringify(abi[0])}
   const web3 = new Web3('${url}');
-  const data = provider.eth.abi.encodeFunctionCall(abiFragment, rest);
-  const data = web3.eth.abi.encodeFunctionSignature("${method}(${methodArgumentsString})"); ${
+  const data = web3.eth.abi.encodeFunctionCall(abiFragment, [${methodArgumentsString}]);${
     from ? `\n  const from = "${from}";` : ''
   }
   const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
