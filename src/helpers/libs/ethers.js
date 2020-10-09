@@ -41,7 +41,7 @@ const contractTemplate = (url, args) => {
 // TODO: fix string/number types for block & trasceType
 const contractTraceTemplate = (url, args) => {
   const [
-    traceType,
+    traceTypeList,
     block,
     from,
     value,
@@ -66,7 +66,7 @@ const contractTraceTemplate = (url, args) => {
     to,
     data,
   };
-  const response = await provider.send('trace_call', [transaction, [${traceType}], ${block}]);
+  const response = await provider.send('trace_call', [transaction, ${traceTypeList}, ${block}]);
   console.log(response);
 })()
   `;
@@ -1104,11 +1104,20 @@ const filter = {
         value,
         data,
       };
-      return provider.send('trace_call', [transaction, [traceType], block]);
+      return provider.send('trace_call', [
+        transaction,
+        traceType.split(', '),
+        block,
+      ]);
     },
     codeSample: (url, ...args) => {
-      // TODO: change template
-      return contractTraceTemplate(url, args);
+      const [traceType, block, ...rest] = args;
+      let traceTypeList = JSON.stringify(traceType.split(', '));
+      return contractTraceTemplate(url, [
+        traceTypeList,
+        JSON.stringify(block),
+        rest,
+      ]);
     },
     args: [
       {
