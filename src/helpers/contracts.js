@@ -127,17 +127,19 @@ export const formatContractArgs = (args, types) => {
   });
 };
 
-export const getContractFriendlyArguments = (argumentList, abi) => {
+export const getContractFriendlyArguments = (argumentList, abi, argOffset) => {
   /* eslint-disable-next-line no-unused-vars*/
-  let [address, _, methodId, ...methodSpecificArgs] = argumentList;
-  if (!methodId || !abi) return argumentList;
+  let list = argumentList;
+  const traceArgs = list.splice(0, argOffset); // remove trace arguments (if any)
+  let [address, _, methodId, ...methodSpecificArgs] = list;
+  if (!methodId || !abi) return list;
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];
   // Pick out the relevant function fragment
   const abiFragment = [getFragmentFromMethodId(abi, methodId)];
-  const args = [address, JSON.stringify(abiFragment), methodName];
+  let args = [address, JSON.stringify(abiFragment), methodName];
   if (argTypes) args.push(...formatContractArgs(methodSpecificArgs, typesList));
-  return args;
+  return traceArgs.concat(args); // add back trace arguments
 };
 
 export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
@@ -155,22 +157,27 @@ export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
   ];
 };
 
-export const getFormInputsFromMethod = (abi, methodId, formInputs) => {
+export const getFormInputsFromMethod = (
+  abi,
+  methodId,
+  formInputs,
+  argOffset
+) => {
   if (!methodId) return;
   const newFormInputs = getArgumentsFromMethodId(abi, methodId);
   if (newFormInputs)
     return [
-      ...formInputs.slice(0, 3), // Discard existing method-specific inputs
+      ...formInputs.slice(0, 3 + argOffset), // Discard existing method-specific inputs
       ...newFormInputs,
     ];
-  else return [...formInputs.slice(0, 3)];
+  else return [...formInputs.slice(0, 3 + argOffset)];
 };
 
-export const onUpdateAbi = (abi, formInputs) => {
+export const onUpdateAbi = (abi, formInputs, argOffset) => {
   const filteredMethods = getFilteredMethods(abi);
   const formInputsCopy = formInputs;
-  formInputsCopy[2] = {
-    ...formInputs[2],
+  formInputsCopy[2 + argOffset] = {
+    ...formInputs[2 + argOffset],
     dropdownOptions: filteredMethods,
     disabled: abi.length === 1,
   };

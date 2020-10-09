@@ -14,6 +14,7 @@ import { navigate, useParams } from '@reach/router';
 
 const ETH_CALL = 'eth_call';
 const TRACE_CALL = 'trace_call';
+const TRACE_ARGS_OFFSET = 2;
 
 const MethodCallContainer = () => {
   const params = useParams();
@@ -37,8 +38,10 @@ const MethodCallContainer = () => {
   const [formInputs, setFormInputs] = useState([]);
   const [argumentList, setArgumentList] = useState([]);
 
+  // Logic when using contract method (eth_call, trace_call)
   const isContractMethod =
     currentMethod === ETH_CALL || currentMethod === TRACE_CALL;
+  const argOffset = currentMethod === TRACE_CALL ? 2 : 0;
 
   const updateURL = (val, index) => {
     let argsList = formArgs.split('/').slice(0, formInputs.length); // Remove dangling arguments
@@ -51,7 +54,7 @@ const MethodCallContainer = () => {
   };
 
   const onUpdateArguments = async (val, index) => {
-    if (isContractMethod && index === 1) {
+    if (isContractMethod && index === 1 + argOffset) {
       // Prevent updating URL if ABI error
       const { error } = await fetchOrParseAbi(val);
       if (error)
@@ -72,7 +75,8 @@ const MethodCallContainer = () => {
     const [provider, proto] = buildProvider(web3Lib, atob(web3URL));
     let args = argumentList.slice();
     // Pre-flight conversion for contract calls
-    if (isContractMethod) args = getContractFriendlyArguments(args, abi);
+    if (isContractMethod)
+      args = getContractFriendlyArguments(args, abi, argOffset);
     exec(provider, proto, ...args)
       .then((response) => {
         logItem({
@@ -90,11 +94,11 @@ const MethodCallContainer = () => {
 
   const loadURL = async () => {
     const list = formArgs.split('/');
-    if (isContractMethod && list[1]) {
+    if (isContractMethod && list[1 + argOffset]) {
       // Load ABI
       try {
-        list[1] = atob(list[1]);
-        const { error, abi } = await fetchOrParseAbi(list[1]);
+        list[1 + argOffset] = atob(list[1 + argOffset]);
+        const { error, abi } = await fetchOrParseAbi(list[1 + argOffset]);
         if (error)
           return logItem({
             method: 'error',
@@ -115,15 +119,22 @@ const MethodCallContainer = () => {
 
   useEffect(() => {
     if (!abi) return;
-    const { newFormInputs, newUrl } = onUpdateAbi(abi, formInputs);
+    const { newFormInputs, newUrl } = onUpdateAbi(abi, formInputs, argOffset);
     setFormInputs(newFormInputs);
-    if (newUrl) updateURL(newUrl, 2);
+    if (newUrl) updateURL(newUrl, 2 + argOffset);
   }, [abi, formInputs]);
 
   useEffect(() => {
     if (!argumentList) return;
-    setFormInputs(getFormInputsFromMethod(abi, argumentList[2], formInputs));
-  }, [argumentList[2]]);
+    setFormInputs(
+      getFormInputsFromMethod(
+        abi,
+        argumentList[2 + argOffset],
+        formInputs,
+        argOffset
+      )
+    );
+  }, [argumentList[2 + argOffset]]);
 
   useEffect(() => {
     if (!initialFormInputs) return;

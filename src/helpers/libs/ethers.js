@@ -1065,8 +1065,18 @@ const filter = {
       return contractTemplate(url, args);
     },
     args: [
-      // TODO: add inputs for Array - Type of trace, one or more of: "vmTrace", "trace", "stateDiff".
-      // Quantity or Tag - (optional) Integer of a block number, or the string 'earliest', 'latest' or 'pending'.
+      {
+        type: 'textfield',
+        description:
+          'Type of trace, one or more of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace, trace',
+      },
+      {
+        type: 'textfield',
+        description:
+          'Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. latest or pending',
+      },
       {
         type: 'textarea',
         description: 'Address of contract',
