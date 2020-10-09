@@ -5,7 +5,7 @@ import { useParams } from '@reach/router';
 import { getCodeSampleFriendlyArguments } from '../helpers/contracts';
 
 const TRACE_CALL = 'trace_call';
-const TRACE_ARGS_OFFSET = 2;
+const TRACE_ARGS_OFFSET = 4;
 
 const CodeSampleContainer = () => {
   const { codeSampleVisible, toggleSampleCode, abi } = useContext(AppContext);

@@ -14,7 +14,7 @@ import { navigate, useParams } from '@reach/router';
 
 const ETH_CALL = 'eth_call';
 const TRACE_CALL = 'trace_call';
-const TRACE_ARGS_OFFSET = 2;
+const TRACE_ARGS_OFFSET = 4;
 
 const MethodCallContainer = () => {
   const params = useParams();

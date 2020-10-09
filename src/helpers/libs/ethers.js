@@ -38,6 +38,22 @@ const contractTemplate = (url, args) => {
   `;
 };
 
+const contractTraceTemplate = (url, args) => {
+  const [address, abi, method, methodArgumentsString] = args;
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = ${abi}
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const contract = new ethers.Contract('${address}', abi, provider);
+  const response = await contract.functions.${method}(${methodArgumentsString});
+  console.log(response);
+})()
+  `;
+};
+
 const EthersCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -1050,15 +1066,27 @@ const filter = {
   },
   trace_call: {
     exec: (provider, proto, ...args) => {
-      const [address, abi, method, ...rest] = args;
-      const contract = new ethers.Contract(address, abi, provider);
-      return contract.functions[method](...rest);
-      // TODO: encode data and parse agruments properly
-      const data = 'no data';
-      const array = 'trace';
-      const quantity = null;
-      // return provider.send('trace_call', data, array, quantity);
-      return () => console.log('trace_call:', data);
+      let [
+        traceType,
+        block,
+        from,
+        value,
+        contract,
+        abi,
+        method,
+        ...rest
+      ] = args;
+      let iface = new ethers.utils.Interface(abi);
+      const data = iface.encodeFunctionData(method, rest);
+      if (value === '') value = null;
+      if (from === '') from = null;
+      const transaction = {
+        from,
+        to: contract,
+        value,
+        data,
+      };
+      return provider.send('trace_call', [transaction, [traceType], block]);
     },
     codeSample: (url, ...args) => {
       // TODO: change template
@@ -1076,6 +1104,18 @@ const filter = {
         description:
           'Hex block number, or the string "latest", "earliest" or "pending"',
         placeholder: 'i.e. latest or pending',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) The address the transaction is sent from',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textfield',
+        description:
+          'value: (optional) Integer formatted as a hex string of the value sent with this transaction',
+        placeholder: 'i.e. 0x19624ffa41f...',
       },
       {
         type: 'textarea',
