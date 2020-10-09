@@ -38,7 +38,6 @@ const contractTemplate = (url, args) => {
   `;
 };
 
-// TODO: fix string/number types for block & trasceType
 const contractTraceTemplate = (url, args) => {
   const [
     traceTypeList,
@@ -60,10 +59,10 @@ const contractTraceTemplate = (url, args) => {
   const iface = new ethers.utils.Interface(abi);
   const data = iface.encodeFunctionData("${method}"${
     methodArgumentsString ? ` , [${methodArgumentsString}]` : ''
-  }); ${from ? `\nconst from = ${from};` : ''}
-  const to = "${contract}"; ${value ? `\nconst value = ${value};` : ''}
-  const transaction = { ${from ? `\nfrom,` : ''}
-    to,
+  }); ${from ? `\n  const from = "${from}";` : ''}
+  const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
+  const transaction = { ${from ? `\n    from,` : ''}
+    to,${value ? `\n    value,` : ''}
     data,
   };
   const response = await provider.send('trace_call', [transaction, ${traceTypeList}, ${block}]);
@@ -1112,11 +1111,10 @@ const filter = {
     },
     codeSample: (url, ...args) => {
       const [traceType, block, ...rest] = args;
-      let traceTypeList = JSON.stringify(traceType.split(', '));
       return contractTraceTemplate(url, [
-        traceTypeList,
+        JSON.stringify(traceType.split(', ')),
         JSON.stringify(block),
-        rest,
+        ...rest,
       ]);
     },
     args: [

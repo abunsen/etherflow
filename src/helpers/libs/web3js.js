@@ -41,7 +41,6 @@ const web3TraceTemplate = (
 `;
 };
 
-// TODO: Add Websocket example?
 const contractTemplate = (url, args) => {
   const [address, abi, method, methodArgumentsString] = args;
   return `const Web3 = require("web3");
@@ -55,6 +54,45 @@ const contractTemplate = (url, args) => {
   const response = await contract.methods.${method}(${methodArgumentsString});
   console.log(response);
 })()`;
+};
+
+const contractTraceTemplate = (url, args) => {
+  const [
+    traceTypeList,
+    block,
+    from,
+    value,
+    contract,
+    abi,
+    method,
+    methodArgumentsString,
+  ] = args;
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = ${abi}
+  const web3 = new Web3('${url}');
+  const data = provider.eth.abi.encodeFunctionSignature(${method}(${methodArgumentsString}));
+  const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
+  const transaction = { ${from ? `\n    from,` : ''}
+    to,${value ? `\n    value,` : ''}
+    data,
+  };
+  web3.extend({
+    methods: [
+      {
+        name: 'parityTraceCall',
+        call: 'trace_call',
+        params: 3,
+        inputFormatter: [null, null, null],
+      },
+    ],
+  });
+  const response = await web3.parityTraceCall(data, ${traceTypeList}, ${block});
+  console.log(response);
+  `;
 };
 
 const Web3JSCalls = {
@@ -1091,6 +1129,95 @@ const Web3JSCalls = {
         description:
           'topics: (optional) The number of traces to display in a batch as an integer.',
         placeholder: 'i.e. 10',
+      },
+    ],
+  },
+  trace_call: {
+    exec: (provider, proto, ...args) => {
+      let [
+        traceType,
+        block,
+        from,
+        value,
+        contract,
+        abi,
+        method,
+        ...rest
+      ] = args;
+      const data = provider.eth.abi.encodeFunctionSignature(
+        `${method}(${rest})`
+      );
+      if (value === '') value = null;
+      if (from === '') from = null;
+      const transaction = {
+        from,
+        to: contract,
+        value,
+        data,
+      };
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceCall',
+            call: 'trace_call',
+            params: 3,
+            inputFormatter: [null, null, null],
+          },
+        ],
+      });
+      return provider.parityTraceCall(
+        transaction,
+        traceType.split(', '),
+        block
+      );
+    },
+    codeSample: (url, ...args) => {
+      const [traceType, block, ...rest] = args;
+      return contractTraceTemplate(url, [
+        JSON.stringify(traceType.split(', ')),
+        JSON.stringify(block),
+        ...rest,
+      ]);
+    },
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'Type of trace, one or more of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace, trace',
+      },
+      {
+        type: 'textfield',
+        description:
+          'Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. latest or pending',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) The address the transaction is sent from',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textfield',
+        description:
+          'value: (optional) Integer formatted as a hex string of the value sent with this transaction',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
       },
     ],
   },
