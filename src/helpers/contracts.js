@@ -71,10 +71,10 @@ const isValidUrl = (string) => {
   return true;
 };
 
-export const getFilteredMethods = (abi) => {
+export const getFilteredMethods = (abi, isWriteAllowed) => {
   try {
     return abi
-      .filter((method) => method.stateMutability === 'view')
+      .filter((method) => isWriteAllowed || method.stateMutability === 'view')
       .map((method) => ({
         value: getMethodId(method),
         name: getMethodDisplayName(method),
@@ -85,7 +85,7 @@ export const getFilteredMethods = (abi) => {
   }
 };
 
-export const fetchOrParseAbi = async (abiVal) => {
+export const fetchOrParseAbi = async (abiVal, isWriteAllowed) => {
   if (!abiVal) return { error: ERROR_MESSAGE_NO_ABI };
   try {
     let abi = abiVal;
@@ -105,7 +105,7 @@ export const fetchOrParseAbi = async (abiVal) => {
       return { error: ERROR_MESSAGE_ABI_TOO_LONG };
     // Handle edge case when single function entity is passed
     if (!abi.length) abi = [abi];
-    const filteredMethods = getFilteredMethods(abi);
+    const filteredMethods = getFilteredMethods(abi, isWriteAllowed);
     if (filteredMethods.length === 0)
       return { error: ERROR_MESSAGE_ABI_NO_READ_FUNCTIONS };
     return { abi };
@@ -127,50 +127,72 @@ export const formatContractArgs = (args, types) => {
   });
 };
 
-export const getContractFriendlyArguments = (argumentList, abi) => {
+export const getContractFriendlyArguments = (argumentList, abi, argOffset) => {
   /* eslint-disable-next-line no-unused-vars*/
-  let [address, _, methodId, ...methodSpecificArgs] = argumentList;
-  if (!methodId || !abi) return argumentList;
+  let list = argumentList;
+  const traceArgs = list.splice(0, argOffset); // remove trace arguments (if any)
+  let [address, _, methodId, ...methodSpecificArgs] = list;
+  if (!methodId || !abi) return list;
   const [methodName, argTypes] = methodId.split('-');
   const typesList = argTypes ? argTypes.split(',') : [];
   // Pick out the relevant function fragment
   const abiFragment = [getFragmentFromMethodId(abi, methodId)];
-  const args = [address, JSON.stringify(abiFragment), methodName];
+  let args = [address, JSON.stringify(abiFragment), methodName];
   if (argTypes) args.push(...formatContractArgs(methodSpecificArgs, typesList));
-  return args;
+  return traceArgs.concat(args); // add back trace arguments
 };
 
-export const getCodeSampleFriendlyArguments = (argumentList, abi) => {
+export const getCodeSampleFriendlyArguments = (
+  argumentList,
+  abi,
+  argOffset
+) => {
+  let list = argumentList;
+  const traceArgs = list.splice(0, argOffset); // remove trace arguments (if any)
   const [
     contract,
     cleanAbi,
     methodId,
     ...methodSpecificArgs
-  ] = getContractFriendlyArguments(argumentList, abi);
-  return [
+  ] = getContractFriendlyArguments(list, abi);
+  let abiObj = cleanAbi;
+  try {
+    abiObj = JSON.parse(cleanAbi);
+  } catch (e) {
+    // do nothing
+  }
+  let codeFriendlyArguments = [
     contract,
-    cleanAbi,
+    abiObj,
     methodId,
     JSON.stringify(methodSpecificArgs).replace(/^\[/, '').replace(/\]$/, ''),
   ];
+  if (traceArgs) codeFriendlyArguments.splice(0, 0, ...traceArgs);
+  return codeFriendlyArguments;
 };
 
-export const getFormInputsFromMethod = (abi, methodId, formInputs) => {
+export const getFormInputsFromMethod = (
+  abi,
+  methodId,
+  formInputs,
+  argOffset
+) => {
   if (!methodId) return;
   const newFormInputs = getArgumentsFromMethodId(abi, methodId);
   if (newFormInputs)
     return [
-      ...formInputs.slice(0, 3), // Discard existing method-specific inputs
+      ...formInputs.slice(0, 3 + argOffset), // Discard existing method-specific inputs
       ...newFormInputs,
     ];
-  else return [...formInputs.slice(0, 3)];
+  else return [...formInputs.slice(0, 3 + argOffset)];
 };
 
-export const onUpdateAbi = (abi, formInputs) => {
-  const filteredMethods = getFilteredMethods(abi);
+export const onUpdateAbi = (abi, formInputs, argOffset) => {
+  const isWriteAllowed = argOffset > 0;
+  const filteredMethods = getFilteredMethods(abi, isWriteAllowed);
   const formInputsCopy = formInputs;
-  formInputsCopy[2] = {
-    ...formInputs[2],
+  formInputsCopy[2 + argOffset] = {
+    ...formInputs[2 + argOffset],
     dropdownOptions: filteredMethods,
     disabled: abi.length === 1,
   };

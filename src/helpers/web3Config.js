@@ -300,6 +300,12 @@ const Web3RpcCalls = {
     web3: calls.web3.default.trace_filter,
     ethers: calls.ethers.default.trace_filter,
   },
+  trace_call: {
+    description:
+      'Executes the given call and returns a number of possible traces for it.',
+    web3: calls.web3.default.trace_call,
+    ethers: calls.ethers.default.trace_call,
+  },
 };
 
 export default Web3RpcCalls;
