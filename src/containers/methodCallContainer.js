@@ -39,10 +39,9 @@ const MethodCallContainer = () => {
   const [argumentList, setArgumentList] = useState([]);
 
   // Logic when using contract method (eth_call, trace_call)
-  const isContractMethod =
-    currentMethod === ETH_CALL || currentMethod === TRACE_CALL;
+  const isContractMethod = [ETH_CALL, TRACE_CALL].includes(currentMethod);
   const argOffset = currentMethod === TRACE_CALL ? TRACE_ARGS_OFFSET : 0;
-  const isWriteAllowed = argOffset > 0
+  const isWriteAllowed = argOffset > 0;
 
   const updateURL = (val, index) => {
     let argsList = formArgs.split('/').slice(0, formInputs.length); // Remove dangling arguments
@@ -99,7 +98,10 @@ const MethodCallContainer = () => {
       // Load ABI
       try {
         list[1 + argOffset] = atob(list[1 + argOffset]);
-        const { error, abi } = await fetchOrParseAbi(list[1 + argOffset], isWriteAllowed);
+        const { error, abi } = await fetchOrParseAbi(
+          list[1 + argOffset],
+          isWriteAllowed
+        );
         if (error)
           return logItem({
             method: 'error',
