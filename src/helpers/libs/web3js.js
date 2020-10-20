@@ -97,6 +97,11 @@ const contractTraceTemplate = (url, args) => {
 })()`;
 };
 
+const newFilterTemplate = (url, args) => {
+  // TODO
+  return ``;
+};
+
 const Web3JSCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -719,14 +724,55 @@ const Web3JSCalls = {
   },
   eth_newFilter: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not YET support this method.')
-      );
+      const filter = {};
+      filter.topics = args[3]
+        ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        : [];
+      filter.fromBlock = args[0] ? args[0] : 'latest';
+      filter.toBlock = args[1] ? args[1] : 'latest';
+      filter.address = args[2] ? args[2] : null;
+
+      provider.extend({
+        methods: [
+          {
+            name: 'parityNewFilter',
+            call: 'eth_newFilter',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      return provider.parityNewFilter(filter);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow yet */';
+      return newFilterTemplate(url, args);
     },
-    args: [],
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'fromBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textfield',
+        description:
+          'toBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) Contract address or a list of addresses from which logs should originate.',
+        placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'topics: (optional) Comma separated strings with filter topics, for "or" functionality use ||. Topics are order-dependent.',
+        placeholder: 'i.e. 0x1962||0x16c4,null',
+      },
+    ],
   },
   eth_newBlockFilter: {
     exec: (provider, proto, ...args) => {
