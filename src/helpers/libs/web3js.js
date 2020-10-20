@@ -731,7 +731,6 @@ const Web3JSCalls = {
       filter.fromBlock = args[0] ? args[0] : 'latest';
       filter.toBlock = args[1] ? args[1] : 'latest';
       filter.address = args[2] ? args[2] : null;
-
       provider.extend({
         methods: [
           {
