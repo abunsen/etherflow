@@ -741,7 +741,7 @@ const Web3JSCalls = {
           },
         ],
       });
-      return provider.parityNewFilter(filter);
+      return provider.eth.getPastLogs(filter);
     },
     codeSample: (url, ...args) => {
       return newFilterTemplate(url, args);

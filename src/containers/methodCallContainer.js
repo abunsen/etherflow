@@ -127,6 +127,7 @@ const MethodCallContainer = () => {
     if (newUrl) updateURL(newUrl, 2 + argOffset);
   }, [abi, formInputs]);
 
+  // Update on contract method call change
   useEffect(() => {
     if (!argumentList) return;
     setFormInputs(
