@@ -105,6 +105,28 @@ const filter = {
 `;
 };
 
+const filterTemplate = (url, filterMethod, ...args) => {
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const filterId = await provider.send('${filterMethod}')
+  const logs = await provider.getLogs(filterId);
+  console.log(logs);
+})()
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const filterId = await provider.send('${filterMethod}')
+  const logs = await provider.getLogs(filterId);
+  console.log(logs);
+})()
+`;
+};
+
 const EthersCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -806,11 +828,7 @@ const EthersCalls = {
       return provider.getLogs(filter);
     },
     codeSample: (url, ...args) => {
-      return ethersTemplate(
-        "send('eth_newPendingTransactionFilter')",
-        'filter',
-        url
-      );
+      return filterTemplate(url, 'eth_newPendingTransactionFilter');
     },
     args: [],
   },
