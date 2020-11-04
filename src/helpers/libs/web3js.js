@@ -98,8 +98,40 @@ const contractTraceTemplate = (url, args) => {
 };
 
 const newFilterTemplate = (url, args) => {
-  // TODO
-  return ``;
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
+  ${args[2] ? "address: '" + args[2] + "'" : ''},
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  }
+};
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: 'eth_newFilter',
+        call: 'eth_newFilter',
+        params: 1,
+        inputFormatter: [null],
+      },
+    ],
+  });
+  const filterId = web3.eth_newFilter(filter);
+  const response = await web3.eth.getPastLogs(filterId);
+  console.log(response);
+})()
+`;
 };
 
 const filterTemplate = (url, filterMethod) => {
@@ -757,14 +789,15 @@ const Web3JSCalls = {
       provider.extend({
         methods: [
           {
-            name: 'parityNewFilter',
+            name: 'eth_newFilter',
             call: 'eth_newFilter',
             params: 1,
             inputFormatter: [null],
           },
         ],
       });
-      return provider.eth.getPastLogs(filter);
+      const filterId = provider.eth_newFilter(filter);
+      return provider.eth.getPastLogs(filterId);
     },
     codeSample: (url, ...args) => {
       return newFilterTemplate(url, args);

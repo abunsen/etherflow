@@ -76,30 +76,23 @@ const newFilterTemplate = (url, args) => {
 // OR import ethers from 'ethers';
 
 const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
+  ${args[2] ? "address: '" + args[2] + "'" : ''},
   topics: ${
     args[3]
       ? JSON.stringify(
           args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
         )
       : '[]'
-  },
-  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
-  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
-  ${args[2] ? "address: '" + args[2] + "'" : ''}
+  }
 };
 
 // HTTP version
 (async () => {
   const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const logs = await provider.getLogs(filter);
-  console.log(logs);
-})()
-
-
-// WebSocket version
-(async () => {
-  const provider = new ethers.providers.WebSocketProvider('${url}');
-  const logs = await provider.getLogs(filter);
+  const filterId = await provider.send('eth_newFilter', [filter]);
+  const logs = await provider.getLogs(filterId);
   console.log(logs);
 })()
 `;
@@ -768,7 +761,7 @@ const EthersCalls = {
     ],
   },
   eth_newFilter: {
-    exec: (provider, proto, ...args) => {
+    exec: async (provider, proto, ...args) => {
       const filter = {};
       filter.topics = args[3]
         ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
@@ -777,7 +770,8 @@ const EthersCalls = {
       filter.toBlock = args[1] ? args[1] : 'latest';
       filter.address = args[2] ? args[2] : null;
 
-      return provider.getLogs(filter);
+      const filterId = await provider.send('eth_newFilter', [filter]);
+      return provider.getLogs(filterId);
     },
     codeSample: (url, ...args) => newFilterTemplate(url, args),
     args: [
@@ -824,8 +818,8 @@ const EthersCalls = {
   },
   eth_newPendingTransactionFilter: {
     exec: async (provider, proto, ...args) => {
-      const filter = await provider.send('eth_newPendingTransactionFilter');
-      return provider.getLogs(filter);
+      const filterId = await provider.send('eth_newPendingTransactionFilter');
+      return provider.getLogs(filterId);
     },
     codeSample: (url) => {
       return filterTemplate(url, 'eth_newPendingTransactionFilter');
