@@ -831,26 +831,24 @@ const Web3JSCalls = {
   },
   eth_newBlockFilter: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('newBlockHeaders', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newBlockFilter',
+            call: 'eth_newBlockFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      const filterId = provider.eth_newBlockFilter();
+      return provider.eth.getPastLogs(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('newBlockHeaders', console.log);
-})()`;
-    },
+    codeSample: (url, ...args) => filterTemplate(url, 'eth_newBlockFilter'),
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: async (provider, proto) => {
+    exec: (provider, proto) => {
       provider.extend({
         methods: [
           {

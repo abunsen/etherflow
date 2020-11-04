@@ -71,42 +71,17 @@ const contractTraceTemplate = (url, args) => {
   `;
 };
 
-const newFilterTemplate = (url, args) => {
+const filterTemplate = (url, filterMethod, filter) => {
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
-
-const filter = {
-  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
-  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
-  ${args[2] ? "address: '" + args[2] + "'" : ''},
-  topics: ${
-    args[3]
-      ? JSON.stringify(
-          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
-        )
-      : '[]'
-  }
-};
-
+${filter ? `\n${filter}\n` : ''}
 // HTTP version
 (async () => {
   const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const filterId = await provider.send('eth_newFilter', [filter]);
-  const logs = await provider.getLogs(filterId);
-  console.log(logs);
-})()
-`;
-};
-
-const filterTemplate = (url, filterMethod) => {
-  return `const ethers = require("ethers");
-// OR import ethers from 'ethers';
-
-// HTTP version
-(async () => {
-  const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const filterId = await provider.send('${filterMethod}')
-  const logs = await provider.getLogs(filterId);
+  const filterId = await provider.send('${filterMethod}'${
+    filter ? ', [filter]' : ''
+  })
+  const logs = await provider.send('eth_getFilterChanges', [filterId]);
   console.log(logs);
 })()
 
@@ -114,7 +89,7 @@ const filterTemplate = (url, filterMethod) => {
 (async () => {
   const provider = new ethers.providers.WebSocketProvider('${url}');
   const filterId = await provider.send('${filterMethod}')
-  const logs = await provider.getLogs(filterId);
+  const logs = await provider.send('eth_getFilterChanges', [filterId]);
   console.log(logs);
 })()
 `;
@@ -771,9 +746,23 @@ const EthersCalls = {
       filter.address = args[2] ? args[2] : null;
 
       const filterId = await provider.send('eth_newFilter', [filter]);
-      return provider.getLogs(filterId);
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
-    codeSample: (url, ...args) => newFilterTemplate(url, args),
+    codeSample: (url, ...args) => {
+      const filter = `const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
+  ${args[2] ? "address: '" + args[2] + "'" : ''},
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  }
+};`;
+      return filterTemplate(url, 'eth_newFilter', filter);
+    },
     args: [
       {
         type: 'textfield',
@@ -802,28 +791,19 @@ const EthersCalls = {
     ],
   },
   eth_newBlockFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) => provider.on('block', resolve));
+    exec: async (provider, proto, ...args) => {
+      const filterId = await provider.send('eth_newBlockFilter');
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
-    codeSample: (url, ...args) => {
-      return ethersTemplate(
-        `on("block", (blockNumber) => {
-    // your callback code here
-  })`,
-        'blockWatcher',
-        url
-      );
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newBlockFilter'),
     args: [],
   },
   eth_newPendingTransactionFilter: {
     exec: async (provider, proto, ...args) => {
       const filterId = await provider.send('eth_newPendingTransactionFilter');
-      return provider.getLogs(filterId);
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
-    codeSample: (url) => {
-      return filterTemplate(url, 'eth_newPendingTransactionFilter');
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newPendingTransactionFilter'),
     args: [],
   },
   eth_uninstallFilter: {
