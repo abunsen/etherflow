@@ -71,6 +71,40 @@ const contractTraceTemplate = (url, args) => {
   `;
 };
 
+const newFilterTemplate = (url, args) => {
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+const filter = {
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  },
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
+  ${args[2] ? "address: '" + args[2] + "'" : ''}
+};
+
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const logs = await provider.getLogs(filter);
+  console.log(logs);
+})()
+
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const logs = await provider.getLogs(filter);
+  console.log(logs);
+})()
+`;
+};
+
 const EthersCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -723,40 +757,7 @@ const EthersCalls = {
 
       return provider.getLogs(filter);
     },
-    codeSample: (url, ...args) => {
-      return `const ethers = require("ethers");
-// OR import ethers from 'ethers';
-
-const filter = {
-    topics: ${
-      args[3]
-        ? JSON.stringify(
-            args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
-          )
-        : '[]'
-    },
-    ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
-    ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
-        args[2] ? "\n\taddress: '" + args[2] + "'" : ''
-      }
-};
-
-// HTTP version
-(async () => {
-  const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const logs = await provider.getLogs(filter);
-  console.log(logs);
-})()
-
-
-// WebSocket version
-(async () => {
-  const provider = new ethers.providers.WebSocketProvider('${url}');
-  const logs = await provider.getLogs(filter);
-  console.log(logs);
-})()
-`;
-    },
+    codeSample: (url, ...args) => newFilterTemplate(url, args),
     args: [
       {
         type: 'textfield',
@@ -800,8 +801,9 @@ const filter = {
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto, ...args) => {
-      return provider.send('eth_newPendingTransactionFilter');
+    exec: async (provider, proto, ...args) => {
+      const filter = await provider.send('eth_newPendingTransactionFilter');
+      return provider.getLogs(filter);
     },
     codeSample: (url, ...args) => {
       return ethersTemplate(

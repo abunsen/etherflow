@@ -211,7 +211,7 @@ const Web3RpcCalls = {
   },
   eth_newFilter: {
     description:
-      'Creates a filter object, based on filter options, to notify when the state changes (logs). To check if the state has changed, call eth_getFilterChanges.',
+      'Creates a filter object, based on filter options, to notify when the state changes (logs). The resulting value from the filter is immediately returned.',
     web3: calls.web3.default.eth_newFilter,
     ethers: calls.ethers.default.eth_newFilter,
   },
@@ -223,7 +223,7 @@ const Web3RpcCalls = {
   },
   eth_newPendingTransactionFilter: {
     description:
-      'Creates a filter in the node, to notify when new pending transactions arrive. To check if the state has changed, call eth_getFilterChanges.',
+      'Creates a filter in the node, to notify when new pending transactions arrive. The resulting value from the filter is immediately returned.',
     web3: calls.web3.default.eth_newPendingTransactionFilter,
     ethers: calls.ethers.default.eth_newPendingTransactionFilter,
   },

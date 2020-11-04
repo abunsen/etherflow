@@ -794,12 +794,19 @@ const Web3JSCalls = {
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('pendingTransactions', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+    exec: (provider, proto) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'newPendingTransactionFilter',
+            call: 'eth_newPendingTransactionFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      const filter = provider.newPendingTransactionFilter();
+      return provider;
     },
     codeSample: (url, ...args) => {
       return `const Web3 = require("web3");
