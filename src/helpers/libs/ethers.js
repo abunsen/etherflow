@@ -9,7 +9,7 @@ const ethersTemplate = (methodCall, varName, url) => {
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const ${varName} = await provider.${methodCall};
   console.log(${varName});
-})()
+})();
 
 
 // WebSocket version
@@ -17,7 +17,7 @@ const ethersTemplate = (methodCall, varName, url) => {
   const provider = new ethers.providers.WebSocketProvider('${url}');
   const ${varName} = await provider.${methodCall};
   console.log(${varName});
-})()
+})();
 `;
 };
 
@@ -67,7 +67,7 @@ const contractTraceTemplate = (url, args) => {
   };
   const response = await provider.send('trace_call', [transaction, ${traceTypeList}, ${block}]);
   console.log(response);
-})()
+})();
   `;
 };
 
@@ -81,17 +81,21 @@ ${filter ? `\n${filter}\n` : ''}
   const filterId = await provider.send('${filterMethod}'${
     filter ? ', [filter]' : ''
   })
+  console.log(filterId);
   const logs = await provider.send('eth_getFilterChanges', [filterId]);
   console.log(logs);
-})()
+})();
 
 // WebSocket version
 (async () => {
   const provider = new ethers.providers.WebSocketProvider('${url}');
-  const filterId = await provider.send('${filterMethod}')
+  const filterId = await provider.send('${filterMethod}'${
+    filter ? ', [filter]' : ''
+  })
+  console.log(filterId);
   const logs = await provider.send('eth_getFilterChanges', [filterId]);
   console.log(logs);
-})()
+})();
 `;
 };
 
