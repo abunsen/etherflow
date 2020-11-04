@@ -102,6 +102,29 @@ const newFilterTemplate = (url, args) => {
   return ``;
 };
 
+const filterTemplate = (url, filterMethod) => {
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: '${filterMethod}',
+        call: '${filterMethod}',
+        params: 0,
+        inputFormatter: [],
+      },
+    ],
+  });
+  const filterId = web3.${filterMethod}();
+  const response = await web3.eth.getPastLogs(filterId);
+  console.log(response);
+})()`;
+};
+
 const Web3JSCalls = {
   web3_clientVersion: {
     exec: (provider, proto, ...args) => {
@@ -794,30 +817,21 @@ const Web3JSCalls = {
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto) => {
+    exec: async (provider, proto) => {
       provider.extend({
         methods: [
           {
-            name: 'newPendingTransactionFilter',
+            name: 'eth_newPendingTransactionFilter',
             call: 'eth_newPendingTransactionFilter',
             params: 0,
             inputFormatter: [],
           },
         ],
       });
-      const filter = provider.newPendingTransactionFilter();
-      return provider;
+      const filterId = provider.eth_newPendingTransactionFilter();
+      return provider.eth.getPastLogs(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('pendingTransactions', console.log);
-})()`;
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newPendingTransactionFilter'),
     args: [],
   },
   eth_uninstallFilter: {

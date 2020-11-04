@@ -105,7 +105,7 @@ const filter = {
 `;
 };
 
-const filterTemplate = (url, filterMethod, ...args) => {
+const filterTemplate = (url, filterMethod) => {
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
 
@@ -827,7 +827,7 @@ const EthersCalls = {
       const filter = await provider.send('eth_newPendingTransactionFilter');
       return provider.getLogs(filter);
     },
-    codeSample: (url, ...args) => {
+    codeSample: (url) => {
       return filterTemplate(url, 'eth_newPendingTransactionFilter');
     },
     args: [],
