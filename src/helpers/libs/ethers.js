@@ -755,8 +755,9 @@ const EthersCalls = {
     codeSample: (url, ...args) => {
       const filter = `const filter = {
   ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
-  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},
-  ${args[2] ? "address: '" + args[2] + "'" : ''},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
+        args[2] ? "\n  address: '" + args[2] + "'," : ''
+      }
   topics: ${
     args[3]
       ? JSON.stringify(
