@@ -131,7 +131,7 @@ const MethodCallContainer = () => {
   useEffect(() => {
     if (!argumentList) return;
     const methodId = argumentList[2 + argOffset];
-    if (!methodId || !abi) return; //setFormInputs(formInputs);
+    if (!methodId || !abi) return;
     setFormInputs(
       getFormInputsFromMethod(abi, methodId, formInputs, argOffset)
     );
