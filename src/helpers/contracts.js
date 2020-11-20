@@ -177,7 +177,6 @@ export const getFormInputsFromMethod = (
   formInputs,
   argOffset
 ) => {
-  if (!methodId) return;
   const newFormInputs = getArgumentsFromMethodId(abi, methodId);
   if (newFormInputs)
     return [

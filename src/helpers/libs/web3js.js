@@ -7,7 +7,7 @@ const web3Template = (methodCall, varName, url) => {
   const web3 = new Web3('${url}');
   const ${varName} = await web3.${methodCall};
   console.log(${varName});
-})()
+})();
 `;
 };
 
@@ -37,7 +37,7 @@ const web3TraceTemplate = (
   });
   const ${varName} = await web3.${methodCall}('${args.join("', '")}');
   console.log(${varName});
-})()
+})();
 `;
 };
 
@@ -53,7 +53,7 @@ const contractTemplate = (url, args) => {
   const contract = new web3.eth.Contract(abi, '${address}');
   const response = await contract.methods.${method}(${methodArgumentsString});
   console.log(response);
-})()`;
+})();`;
 };
 
 const contractTraceTemplate = (url, args) => {
@@ -94,7 +94,41 @@ const contractTraceTemplate = (url, args) => {
   });
   const response = await web3.parityTraceCall(transaction, ${traceTypeList}, ${block});
   console.log(response);
-})()`;
+})();`;
+};
+
+const filterTemplate = (url, filterMethod, filter) => {
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+${filter ? `\n${filter}\n` : ''}
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: '${filterMethod}',
+        call: '${filterMethod}',
+        params: ${filter ? 1 : 0},
+        inputFormatter: [${filter ? 'null' : ''}],
+      },
+    ],
+  });
+  web3.extend({
+    methods: [
+      {
+        name: 'eth_getFilterChanges',
+        call: 'eth_getFilterChanges',
+        params: 1,
+        inputFormatter: [null],
+      },
+    ],
+  });
+  const filterId = await web3.${filterMethod}(${filter ? 'filter' : ''});
+  console.log(filterId);
+  const response = await web3.eth_getFilterChanges(filterId);
+  console.log(response);
+})();`;
 };
 
 const Web3JSCalls = {
@@ -718,54 +752,134 @@ const Web3JSCalls = {
     args: [],
   },
   eth_newFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not YET support this method.')
-      );
+    exec: async (provider, proto, ...args) => {
+      const filter = {};
+      filter.topics = args[3]
+        ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        : [];
+      filter.fromBlock = args[0] ? args[0] : 'latest';
+      filter.toBlock = args[1] ? args[1] : 'latest';
+      filter.address = args[2] ? args[2] : null;
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newFilter',
+            call: 'eth_newFilter',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newFilter(filter);
+      return provider.eth_getFilterChanges(filterId);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow yet */';
+      const filter = `const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
+        args[2] ? "\n  address: '" + args[2] + "'," : ''
+      }
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  }
+};`;
+      return filterTemplate(url, 'eth_newFilter', filter);
     },
-    args: [],
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'fromBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textfield',
+        description:
+          'toBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) Contract address or a list of addresses from which logs should originate.',
+        placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'topics: (optional) Comma separated strings with filter topics, for "or" functionality use ||. Topics are order-dependent.',
+        placeholder: 'i.e. 0x1962||0x16c4,null',
+      },
+    ],
   },
   eth_newBlockFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('newBlockHeaders', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+    exec: async (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newBlockFilter',
+            call: 'eth_newBlockFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newBlockFilter();
+      return provider.eth_getFilterChanges(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('newBlockHeaders', console.log);
-})()`;
-    },
+    codeSample: (url, ...args) => filterTemplate(url, 'eth_newBlockFilter'),
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('pendingTransactions', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+    exec: async (provider, proto) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newPendingTransactionFilter',
+            call: 'eth_newPendingTransactionFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newPendingTransactionFilter();
+      return provider.eth_getFilterChanges(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('pendingTransactions', console.log);
-})()`;
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newPendingTransactionFilter'),
     args: [],
   },
   eth_uninstallFilter: {

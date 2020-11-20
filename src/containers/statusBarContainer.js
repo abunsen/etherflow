@@ -8,7 +8,13 @@ const StatusBarContainer = () => {
   const web3URL = params.web3URL || '';
   const [statusInfo, setStatusInfo] = useState({});
   useEffect(() => {
-    web3State(atob(web3URL)).then(setStatusInfo);
+    let isMounted = true;
+    web3State(atob(web3URL)).then((data) => {
+      if (isMounted) setStatusInfo(data);
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [web3URL]);
 
   return <StatusBar {...statusInfo} />;

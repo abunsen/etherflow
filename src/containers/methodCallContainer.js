@@ -127,15 +127,13 @@ const MethodCallContainer = () => {
     if (newUrl) updateURL(newUrl, 2 + argOffset);
   }, [abi, formInputs]);
 
+  // Update the form inputs whenever a new contract method is selected
   useEffect(() => {
     if (!argumentList) return;
+    const methodId = argumentList[2 + argOffset];
+    if (!methodId || !abi) return;
     setFormInputs(
-      getFormInputsFromMethod(
-        abi,
-        argumentList[2 + argOffset],
-        formInputs,
-        argOffset
-      )
+      getFormInputsFromMethod(abi, methodId, formInputs, argOffset)
     );
   }, [argumentList[2 + argOffset]]);
 
