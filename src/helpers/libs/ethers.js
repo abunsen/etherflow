@@ -1017,23 +1017,24 @@ const EthersCalls = {
   },
   trace_filter: {
     exec: (provider, proto, ...args) => {
-      const filter = {};
+      const filter = {
+        ...(args[2] && { fromAddress: [args[2]] }),
+        ...(args[3] && { toAddress: [args[3]] }),
+        ...(args[4] && { after: args[4] }),
+        ...(args[5] && { count: args[5] }),
+      };
       filter.fromBlock = args[0] ? args[0] : 'latest';
       filter.toBlock = args[1] ? args[1] : 'latest';
-      if (args[2] !== '') filter.fromAddress = [args[2]];
-      if (args[3] !== '') filter.toAddress = [args[3]];
-      if (args[4] !== '') filter.after = args[4];
-      if (args[5] !== '') filter.count = args[5];
 
-      return provider.send('trace_filter', filter);
+      return provider.send('trace_filter', [filter]);
     },
     codeSample: (url, ...args) => {
       return ethersTemplate(
         `send('trace_filter', [{
   "fromBlock": "${args[0] || 'latest'}",
   "toBlock": "${args[1] || 'latest'}",${
-          args[2] ? '\n\t"fromAddress": ["' + args[2] + '"],' : ''
-        }${args[3] ? '\n\t"toAddress": ["' + args[3] + '"],' : ''}${
+          args[2] ? '\n\t"fromAddress": [' + args[2] + '],' : ''
+        }${args[3] ? '\n\t"toAddress": [' + args[3] + '],' : ''}${
           args[4] ? '\n\t"after": ' + args[3] + ',' : ''
         }${args[4] ? '\n\t"count": ' + args[4] + ',' : ''}
 }])`,
@@ -1063,7 +1064,7 @@ const EthersCalls = {
       {
         type: 'textarea',
         description:
-          'toAddress: (optional) Contract address or a list of addresses from which logs should originate.',
+          'toAddress: (optional) Contract address or a list of addresses to which logs should terminate.',
         placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
       },
       {
