@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 const web3State = async (url) => {
   if (!url) {
