@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 const ethersTemplate = (methodCall, varName, url) => {
   return `const ethers = require("ethers");
