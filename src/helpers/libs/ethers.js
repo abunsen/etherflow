@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers';
+
 const ethersTemplate = (methodCall, varName, url) => {
   return `const ethers = require("ethers");
 // OR import ethers from 'ethers';
@@ -118,7 +120,7 @@ const EthersCalls = {
   },
   eth_gasPrice: {
     exec: (provider, proto, ...args) => {
-      return provider.getGasPrice();
+      return provider.getGasPrice().then(resp => BigNumber.from(resp._hex).toString());
     },
     codeSample: (url, ...args) => {
       return ethersTemplate('getGasPrice()', 'gasPrice', url);
@@ -145,7 +147,7 @@ const EthersCalls = {
   },
   eth_getBalance: {
     exec: (provider, proto, ...args) => {
-      return provider.getBalance(...args);
+      return provider.getBalance(...args).then(resp => BigNumber.from(resp._hex).toString());
     },
     codeSample: (url, ...args) => {
       return ethersTemplate(
