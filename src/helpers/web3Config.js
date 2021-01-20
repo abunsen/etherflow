@@ -139,8 +139,7 @@ const Web3RpcCalls = {
     ethers: calls.ethers.default.eth_sendRawTransaction,
   },
   eth_call: {
-    disabled: true,
-    description: '🚫 This method is not YET supported in EtherFlow!',
+    description: 'Call any read-only function on a deployed contract',
     web3: calls.web3.default.eth_call,
     ethers: calls.ethers.default.eth_call,
   },
@@ -212,19 +211,19 @@ const Web3RpcCalls = {
   },
   eth_newFilter: {
     description:
-      'Creates a filter object, based on filter options, to notify when the state changes (logs). To check if the state has changed, call eth_getFilterChanges.',
+      'Creates a filter object, based on filter options, to notify when the state changes (logs).  The resulting value from the filter is immediately returned using `eth_getFilterChanges`.',
     web3: calls.web3.default.eth_newFilter,
     ethers: calls.ethers.default.eth_newFilter,
   },
   eth_newBlockFilter: {
     description:
-      'Creates a filter in the node, to notify when a new block arrives. To check if the state has changed, call `eth_getFilterChanges`.',
+      'Creates a filter in the node, to notify when a new block arrives. The resulting value from the filter is immediately returned using `eth_getFilterChanges`.',
     web3: calls.web3.default.eth_newBlockFilter,
     ethers: calls.ethers.default.eth_newBlockFilter,
   },
   eth_newPendingTransactionFilter: {
     description:
-      'Creates a filter in the node, to notify when new pending transactions arrive. To check if the state has changed, call eth_getFilterChanges.',
+      'Creates a filter in the node, to notify when new pending transactions arrive. The resulting value from the filter is immediately returned using `eth_getFilterChanges`.',
     web3: calls.web3.default.eth_newPendingTransactionFilter,
     ethers: calls.ethers.default.eth_newPendingTransactionFilter,
   },
@@ -300,6 +299,12 @@ const Web3RpcCalls = {
     description: 'Returns traces matching given filter.',
     web3: calls.web3.default.trace_filter,
     ethers: calls.ethers.default.trace_filter,
+  },
+  trace_call: {
+    description:
+      'Executes the given call and returns a number of possible traces for it.',
+    web3: calls.web3.default.trace_call,
+    ethers: calls.ethers.default.trace_call,
   },
 };
 

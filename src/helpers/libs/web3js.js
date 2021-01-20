@@ -7,7 +7,7 @@ const web3Template = (methodCall, varName, url) => {
   const web3 = new Web3('${url}');
   const ${varName} = await web3.${methodCall};
   console.log(${varName});
-})()
+})();
 `;
 };
 
@@ -37,8 +37,98 @@ const web3TraceTemplate = (
   });
   const ${varName} = await web3.${methodCall}('${args.join("', '")}');
   console.log(${varName});
-})()
+})();
 `;
+};
+
+const contractTemplate = (url, args) => {
+  const [address, abi, method, methodArgumentsString] = args;
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const abi = ${abi && JSON.stringify(abi)}
+  const web3 = new Web3('${url}');
+  const contract = new web3.eth.Contract(abi, '${address}');
+  const response = await contract.methods.${method}(${methodArgumentsString});
+  console.log(response);
+})();`;
+};
+
+const contractTraceTemplate = (url, args) => {
+  const [
+    traceTypeList,
+    block,
+    from,
+    value,
+    contract,
+    abi,
+    method,
+    methodArgumentsString,
+  ] = args;
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+
+// HTTP version
+(async () => {
+  const abiFragment = ${abi && JSON.stringify(abi[0])}
+  const web3 = new Web3('${url}');
+  const data = web3.eth.abi.encodeFunctionCall(abiFragment, [${methodArgumentsString}]);${
+    from ? `\n  const from = "${from}";` : ''
+  }
+  const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
+  const transaction = { ${from ? `\n    from,` : ''}
+    to,${value ? `\n    value,` : ''}
+    data,
+  };
+  web3.extend({
+    methods: [
+      {
+        name: 'parityTraceCall',
+        call: 'trace_call',
+        params: 3,
+        inputFormatter: [null, null, null],
+      },
+    ],
+  });
+  const response = await web3.parityTraceCall(transaction, ${traceTypeList}, ${block});
+  console.log(response);
+})();`;
+};
+
+const filterTemplate = (url, filterMethod, filter) => {
+  return `const Web3 = require("web3");
+// OR import Web3 from 'web3';
+${filter ? `\n${filter}\n` : ''}
+// HTTP version
+(async () => {
+  const web3 = new Web3('${url}');
+  web3.extend({
+    methods: [
+      {
+        name: '${filterMethod}',
+        call: '${filterMethod}',
+        params: ${filter ? 1 : 0},
+        inputFormatter: [${filter ? 'null' : ''}],
+      },
+    ],
+  });
+  web3.extend({
+    methods: [
+      {
+        name: 'eth_getFilterChanges',
+        call: 'eth_getFilterChanges',
+        params: 1,
+        inputFormatter: [null],
+      },
+    ],
+  });
+  const filterId = await web3.${filterMethod}(${filter ? 'filter' : ''});
+  console.log(filterId);
+  const response = await web3.eth_getFilterChanges(filterId);
+  console.log(response);
+})();`;
 };
 
 const Web3JSCalls = {
@@ -405,14 +495,34 @@ const Web3JSCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      const [address, abi, method, ...rest] = args;
+      try {
+        const contract = new provider.eth.Contract(JSON.parse(abi), address);
+        return contract.methods[method](...rest).call();
+      } catch (e) {
+        console.log(e);
+      }
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      return contractTemplate(url, args);
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {
@@ -642,54 +752,134 @@ const Web3JSCalls = {
     args: [],
   },
   eth_newFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not YET support this method.')
-      );
+    exec: async (provider, proto, ...args) => {
+      const filter = {};
+      filter.topics = args[3]
+        ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        : [];
+      filter.fromBlock = args[0] ? args[0] : 'latest';
+      filter.toBlock = args[1] ? args[1] : 'latest';
+      filter.address = args[2] ? args[2] : null;
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newFilter',
+            call: 'eth_newFilter',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newFilter(filter);
+      return provider.eth_getFilterChanges(filterId);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow yet */';
+      const filter = `const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
+        args[2] ? "\n  address: '" + args[2] + "'," : ''
+      }
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  }
+};`;
+      return filterTemplate(url, 'eth_newFilter', filter);
     },
-    args: [],
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'fromBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textfield',
+        description:
+          'toBlock: Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. 0x29c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) Contract address or a list of addresses from which logs should originate.',
+        placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
+      },
+      {
+        type: 'textarea',
+        description:
+          'topics: (optional) Comma separated strings with filter topics, for "or" functionality use ||. Topics are order-dependent.',
+        placeholder: 'i.e. 0x1962||0x16c4,null',
+      },
+    ],
   },
   eth_newBlockFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('newBlockHeaders', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+    exec: async (provider, proto, ...args) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newBlockFilter',
+            call: 'eth_newBlockFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newBlockFilter();
+      return provider.eth_getFilterChanges(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('newBlockHeaders', console.log);
-})()`;
-    },
+    codeSample: (url, ...args) => filterTemplate(url, 'eth_newBlockFilter'),
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        provider.eth.subscribe('pendingTransactions', (error, result) => {
-          if (!error) resolve(result);
-        })
-      );
+    exec: async (provider, proto) => {
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_newPendingTransactionFilter',
+            call: 'eth_newPendingTransactionFilter',
+            params: 0,
+            inputFormatter: [],
+          },
+        ],
+      });
+      provider.extend({
+        methods: [
+          {
+            name: 'eth_getFilterChanges',
+            call: 'eth_getFilterChanges',
+            params: 1,
+            inputFormatter: [null],
+          },
+        ],
+      });
+      const filterId = await provider.eth_newPendingTransactionFilter();
+      return provider.eth_getFilterChanges(filterId);
     },
-    codeSample: (url, ...args) => {
-      return `const Web3 = require("web3");
-// OR Web3 ethers from 'web3';
-
-// HTTP version
-(async () => {
-  const web3 = new Web3('${url}');
-  web3.eth.subscribe('pendingTransactions', console.log);
-})()`;
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newPendingTransactionFilter'),
     args: [],
   },
   eth_uninstallFilter: {
@@ -970,13 +1160,14 @@ const Web3JSCalls = {
   },
   trace_filter: {
     exec: (provider, proto, ...args) => {
-      const filter = {};
+      const filter = {
+        ...(args[2] && { fromAddress: [args[2]] }),
+        ...(args[3] && { toAddress: [args[3]] }),
+        ...(args[4] && { after: args[4] }),
+        ...(args[5] && { count: args[5] }),
+      };
       filter.fromBlock = args[0] ? args[0] : 'latest';
       filter.toBlock = args[1] ? args[1] : 'latest';
-      if (args[2] !== '') filter.fromAddress = [args[2]];
-      if (args[3] !== '') filter.toAddress = [args[3]];
-      if (args[4] !== '') filter.after = +args[4];
-      if (args[5] !== '') filter.count = +args[5];
 
       provider.extend({
         methods: [
@@ -1010,8 +1201,8 @@ const Web3JSCalls = {
   const trace = await web3.parityTraceFilter({
     "fromBlock": "${args[0] || 'latest'}",
     "toBlock": "${args[1] || 'latest'}",${
-        args[2] ? '\n\t"fromAddress": ["' + args[2] + '"],' : ''
-      }${args[3] ? '\n\t"toAddress": ["' + args[3] + '"],' : ''}${
+        args[2] ? '\n\t"fromAddress": [' + args[2] + '],' : ''
+      }${args[3] ? '\n\t"toAddress": [' + args[3] + '],' : ''}${
         args[4] ? '\n\t"after": ' + args[3] + ',' : ''
       }${args[4] ? '\n\t"count": ' + args[4] + ',' : ''}
   });
@@ -1041,7 +1232,7 @@ const Web3JSCalls = {
       {
         type: 'textarea',
         description:
-          'toAddress: (optional) Contract address or a list of addresses from which logs should originate.',
+          'toAddress: (optional) Contract address or a list of addresses to which logs should terminate.',
         placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
       },
       {
@@ -1055,6 +1246,96 @@ const Web3JSCalls = {
         description:
           'topics: (optional) The number of traces to display in a batch as an integer.',
         placeholder: 'i.e. 10',
+      },
+    ],
+  },
+  trace_call: {
+    exec: (provider, proto, ...args) => {
+      let [
+        traceType,
+        block,
+        from,
+        value,
+        contract,
+        abi,
+        method,
+        ...rest
+      ] = args;
+      const data = provider.eth.abi.encodeFunctionCall(
+        JSON.parse(abi)[0],
+        rest
+      );
+      if (value === '') value = null;
+      if (from === '') from = null;
+      const transaction = {
+        from,
+        to: contract,
+        value,
+        data,
+      };
+      provider.extend({
+        methods: [
+          {
+            name: 'parityTraceCall',
+            call: 'trace_call',
+            params: 3,
+            inputFormatter: [null, null, null],
+          },
+        ],
+      });
+      return provider.parityTraceCall(
+        transaction,
+        traceType.split(', '),
+        block
+      );
+    },
+    codeSample: (url, ...args) => {
+      const [traceType, block, ...rest] = args;
+      return contractTraceTemplate(url, [
+        JSON.stringify(traceType.split(', ')),
+        JSON.stringify(block),
+        ...rest,
+      ]);
+    },
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'Type of trace, one or more of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace, trace',
+      },
+      {
+        type: 'textfield',
+        description:
+          'Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. latest or pending',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) The address the transaction is sent from',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textfield',
+        description:
+          'value: (optional) Integer formatted as a hex string of the value sent with this transaction',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
       },
     ],
   },

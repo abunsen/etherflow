@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 
 const ethersTemplate = (methodCall, varName, url) => {
   return `const ethers = require("ethers");
@@ -9,7 +9,7 @@ const ethersTemplate = (methodCall, varName, url) => {
   const provider = new ethers.providers.JsonRpcProvider('${url}');
   const ${varName} = await provider.${methodCall};
   console.log(${varName});
-})()
+})();
 
 
 // WebSocket version
@@ -17,7 +17,85 @@ const ethersTemplate = (methodCall, varName, url) => {
   const provider = new ethers.providers.WebSocketProvider('${url}');
   const ${varName} = await provider.${methodCall};
   console.log(${varName});
+})();
+`;
+};
+
+// TODO: Add Websocket example?
+const contractTemplate = (url, args) => {
+  const [address, abi, method, methodArgumentsString] = args;
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = ${abi && JSON.stringify(abi)}
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const contract = new ethers.Contract('${address}', abi, provider);
+  const response = await contract.functions.${method}(${methodArgumentsString});
+  console.log(response);
 })()
+  `;
+};
+
+const contractTraceTemplate = (url, args) => {
+  const [
+    traceTypeList,
+    block,
+    from,
+    value,
+    contract,
+    abi,
+    method,
+    methodArgumentsString,
+  ] = args;
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+
+// HTTP version
+(async () => {
+  const abi = ${abi && JSON.stringify(abi)}
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const iface = new ethers.utils.Interface(abi);
+  const data = iface.encodeFunctionData("${method}"${
+    methodArgumentsString ? ` , [${methodArgumentsString}]` : ''
+  }); ${from ? `\n  const from = "${from}";` : ''}
+  const to = "${contract}"; ${value ? `\n  const value = "${value}";` : ''}
+  const transaction = { ${from ? `\n    from,` : ''}
+    to,${value ? `\n    value,` : ''}
+    data,
+  };
+  const response = await provider.send('trace_call', [transaction, ${traceTypeList}, ${block}]);
+  console.log(response);
+})();
+  `;
+};
+
+const filterTemplate = (url, filterMethod, filter) => {
+  return `const ethers = require("ethers");
+// OR import ethers from 'ethers';
+${filter ? `\n${filter}\n` : ''}
+// HTTP version
+(async () => {
+  const provider = new ethers.providers.JsonRpcProvider('${url}');
+  const filterId = await provider.send('${filterMethod}'${
+    filter ? ', [filter]' : ''
+  })
+  console.log(filterId);
+  const logs = await provider.send('eth_getFilterChanges', [filterId]);
+  console.log(logs);
+})();
+
+// WebSocket version
+(async () => {
+  const provider = new ethers.providers.WebSocketProvider('${url}');
+  const filterId = await provider.send('${filterMethod}'${
+    filter ? ', [filter]' : ''
+  })
+  console.log(filterId);
+  const logs = await provider.send('eth_getFilterChanges', [filterId]);
+  console.log(logs);
+})();
 `;
 };
 
@@ -373,14 +451,30 @@ const EthersCalls = {
   },
   eth_call: {
     exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) =>
-        reject('EtherFlow does not support this method.')
-      );
+      const [address, abi, method, ...rest] = args;
+      const contract = new ethers.Contract(address, abi, provider);
+      return contract.functions[method](...rest);
     },
     codeSample: (url, ...args) => {
-      return '/* Not Supported by EtherFlow */';
+      return contractTemplate(url, args);
     },
-    args: [],
+    args: [
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
+      },
+    ],
   },
   eth_estimateGas: {
     exec: (provider, proto, ...args) => {
@@ -646,7 +740,7 @@ const EthersCalls = {
     ],
   },
   eth_newFilter: {
-    exec: (provider, proto, ...args) => {
+    exec: async (provider, proto, ...args) => {
       const filter = {};
       filter.topics = args[3]
         ? args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
@@ -655,41 +749,24 @@ const EthersCalls = {
       filter.toBlock = args[1] ? args[1] : 'latest';
       filter.address = args[2] ? args[2] : null;
 
-      return provider.getLogs(filter);
+      const filterId = await provider.send('eth_newFilter', [filter]);
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
     codeSample: (url, ...args) => {
-      return `const ethers = require("ethers");
-// OR import ethers from 'ethers';
-
-const filter = {
-    topics: ${
-      args[3]
-        ? JSON.stringify(
-            args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
-          )
-        : '[]'
-    },
-    ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
-    ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
-        args[2] ? "\n\taddress: '" + args[2] + "'" : ''
+      const filter = `const filter = {
+  ${args[0] ? "fromBlock: '" + args[0] + "'" : "fromBlock: 'latest'"},
+  ${args[1] ? "toBlock: '" + args[1] + "'" : "toBlock: 'latest'"},${
+        args[2] ? "\n  address: '" + args[2] + "'," : ''
       }
-};
-
-// HTTP version
-(async () => {
-  const provider = new ethers.providers.JsonRpcProvider('${url}');
-  const logs = await provider.getLogs(filter);
-  console.log(logs);
-})()
-
-
-// WebSocket version
-(async () => {
-  const provider = new ethers.providers.WebSocketProvider('${url}');
-  const logs = await provider.getLogs(filter);
-  console.log(logs);
-})()
-`;
+  topics: ${
+    args[3]
+      ? JSON.stringify(
+          args[3].split(',').map((x) => (x === 'null' ? null : x.split('||')))
+        )
+      : '[]'
+  }
+};`;
+      return filterTemplate(url, 'eth_newFilter', filter);
     },
     args: [
       {
@@ -719,31 +796,19 @@ const filter = {
     ],
   },
   eth_newBlockFilter: {
-    exec: (provider, proto, ...args) => {
-      return new Promise((resolve, reject) => provider.on('block', resolve));
+    exec: async (provider, proto, ...args) => {
+      const filterId = await provider.send('eth_newBlockFilter');
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
-    codeSample: (url, ...args) => {
-      return ethersTemplate(
-        `on("block", (blockNumber) => {
-    // your callback code here
-  })`,
-        'blockWatcher',
-        url
-      );
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newBlockFilter'),
     args: [],
   },
   eth_newPendingTransactionFilter: {
-    exec: (provider, proto, ...args) => {
-      return provider.send('eth_newPendingTransactionFilter');
+    exec: async (provider, proto, ...args) => {
+      const filterId = await provider.send('eth_newPendingTransactionFilter');
+      return provider.send('eth_getFilterChanges', [filterId]);
     },
-    codeSample: (url, ...args) => {
-      return ethersTemplate(
-        "send('eth_newPendingTransactionFilter')",
-        'filter',
-        url
-      );
-    },
+    codeSample: (url) => filterTemplate(url, 'eth_newPendingTransactionFilter'),
     args: [],
   },
   eth_uninstallFilter: {
@@ -952,23 +1017,24 @@ const filter = {
   },
   trace_filter: {
     exec: (provider, proto, ...args) => {
-      const filter = {};
+      const filter = {
+        ...(args[2] && { fromAddress: [args[2]] }),
+        ...(args[3] && { toAddress: [args[3]] }),
+        ...(args[4] && { after: args[4] }),
+        ...(args[5] && { count: args[5] }),
+      };
       filter.fromBlock = args[0] ? args[0] : 'latest';
       filter.toBlock = args[1] ? args[1] : 'latest';
-      if (args[2] !== '') filter.fromAddress = [args[2]];
-      if (args[3] !== '') filter.toAddress = [args[3]];
-      if (args[4] !== '') filter.after = args[4];
-      if (args[5] !== '') filter.count = args[5];
 
-      return provider.send('trace_filter', filter);
+      return provider.send('trace_filter', [filter]);
     },
     codeSample: (url, ...args) => {
       return ethersTemplate(
         `send('trace_filter', [{
   "fromBlock": "${args[0] || 'latest'}",
   "toBlock": "${args[1] || 'latest'}",${
-          args[2] ? '\n\t"fromAddress": ["' + args[2] + '"],' : ''
-        }${args[3] ? '\n\t"toAddress": ["' + args[3] + '"],' : ''}${
+          args[2] ? '\n\t"fromAddress": [' + args[2] + '],' : ''
+        }${args[3] ? '\n\t"toAddress": [' + args[3] + '],' : ''}${
           args[4] ? '\n\t"after": ' + args[3] + ',' : ''
         }${args[4] ? '\n\t"count": ' + args[4] + ',' : ''}
 }])`,
@@ -998,7 +1064,7 @@ const filter = {
       {
         type: 'textarea',
         description:
-          'toAddress: (optional) Contract address or a list of addresses from which logs should originate.',
+          'toAddress: (optional) Contract address or a list of addresses to which logs should terminate.',
         placeholder: 'i.e. 0x19624ffa41fe26744e74fdbba77bef967a222d4c',
       },
       {
@@ -1012,6 +1078,84 @@ const filter = {
         description:
           'topics: (optional) The number of traces to display in a batch as an integer.',
         placeholder: 'i.e. 10',
+      },
+    ],
+  },
+  trace_call: {
+    exec: (provider, proto, ...args) => {
+      let [
+        traceType,
+        block,
+        from,
+        value,
+        contract,
+        abi,
+        method,
+        ...rest
+      ] = args;
+      let iface = new ethers.utils.Interface(abi);
+      const data = iface.encodeFunctionData(method, rest);
+      if (value === '') value = null;
+      if (from === '') from = null;
+      const transaction = {
+        from,
+        to: contract,
+        value,
+        data,
+      };
+      return provider.send('trace_call', [
+        transaction,
+        traceType.split(', '),
+        block,
+      ]);
+    },
+    codeSample: (url, ...args) => {
+      const [traceType, block, ...rest] = args;
+      return contractTraceTemplate(url, [
+        JSON.stringify(traceType.split(', ')),
+        JSON.stringify(block),
+        ...rest,
+      ]);
+    },
+    args: [
+      {
+        type: 'textfield',
+        description:
+          'Type of trace, one or more of: `vmTrace`, `trace`, `stateDiff`',
+        placeholder: 'i.e. vmTrace, trace',
+      },
+      {
+        type: 'textfield',
+        description:
+          'Hex block number, or the string "latest", "earliest" or "pending"',
+        placeholder: 'i.e. latest or pending',
+      },
+      {
+        type: 'textarea',
+        description:
+          'address: (optional) The address the transaction is sent from',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textfield',
+        description:
+          'value: (optional) Integer formatted as a hex string of the value sent with this transaction',
+        placeholder: 'i.e. 0x19624ffa41f...',
+      },
+      {
+        type: 'textarea',
+        description: 'Address of contract',
+        placeholder: 'i.e. 0x91b51c173a4...',
+      },
+      {
+        type: 'textarea',
+        description: 'Contract ABI (URL or single function object)',
+        placeholder:
+          'i.e. [{"inputs":[{"name":"chainId...\nOR\nhttps://raw.githubusercontent.com/.../build/contracts/ERC20.json',
+      },
+      {
+        type: 'dropdown',
+        description: 'Function name (READ only)',
       },
     ],
   },

@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import Web3 from 'web3';
 
 export default (web3Lib, web3URL) => {
