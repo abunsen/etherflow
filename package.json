@@ -26,7 +26,7 @@
     "cors": "^2.8.5",
     "ethers": "^5.0.5",
     "express": "^4.17.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.3",
