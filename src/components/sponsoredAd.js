@@ -14,9 +14,9 @@ const SponsoredAd = ({ visible, setSponsorVisible }) => {
             <div className="flex items-start">
               <div className="flex-shrink-0 pt-0.5">
                 <img
-                  className="h-10 w-10 rounded-full"
-                  src="https://pbs.twimg.com/profile_images/880519774798835712/qzz95hUu_400x400.jpg"
-                  alt=""
+                  className="h-10 w-10"
+                  src="/images/blue-q_icon.svg"
+                  alt="Quicknode"
                 />
               </div>
               <div className="ml-3 w-0 flex-1">
